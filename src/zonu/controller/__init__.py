@@ -3,7 +3,7 @@
 from PyQt4 import QtCore
 from zonu import model
 from zonu import ui
-import boardupdatethread
+import retrieveboardthread
 
 
 class Controller(object):
@@ -12,6 +12,8 @@ class Controller(object):
         self.app = app
         self.view = view
         self.config = config
+    
+        self.thread_pool = []
     
     def BindView(self):
         # Connect with general app signals
@@ -45,10 +47,18 @@ class Controller(object):
             loading_board_view = ui.LoadingBoardView(self.view.main_window)
             self.view.main_window.SetContent(loading_board_view)
             
-            thread = boardupdatethread.BoardUpdateThread(self.view, self.config,
-                                                         tree_widget_item.board_iden)
+            thread = retrieveboardthread.RetrieveBoardThread(tree_widget_item.board_iden)
+            thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
+                           self._OnBoardTreeClickBoardRetreivedReady)            
             thread.start()
             
+            self.thread_pool.append(thread)
+
+    def _OnBoardTreeClickBoardRetreivedReady(self, board):        
+        board_view = ui.BoardView(self.view.main_window, self.config)
+        board_view.UpdateHeadlines(board.GetHeadlines())
+        self.view.main_window.SetContent(board_view)
+    
     def _OnExit(self):
         self.config.main_window_size = (self.view.main_window.size().width(),
                                         self.view.main_window.size().height())

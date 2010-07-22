@@ -4,6 +4,7 @@ from PyQt4 import QtGui
 import mainwindowcontent
 import threadlist
 
+
 class BoardView(mainwindowcontent.MainWindowContent, QtGui.QSplitter):
     def __init__(self, parent, config):
         mainwindowcontent.MainWindowContent.__init__(self)
@@ -19,6 +20,3 @@ class BoardView(mainwindowcontent.MainWindowContent, QtGui.QSplitter):
         
     def UpdateHeadlines(self, headlines):
         self.thread_list._Update(headlines)
-    
-if __name__ == '__main__':
-    BoardView()

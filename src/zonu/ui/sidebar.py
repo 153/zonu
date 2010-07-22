@@ -15,7 +15,7 @@ class Sidebar(QtGui.QWidget):
 
         self.watched_threads_btn = QtGui.QPushButton('Watched Threads', self)
         vbox.addWidget(self.watched_threads_btn)
-                
+        
         self.setLayout(vbox)
 
 

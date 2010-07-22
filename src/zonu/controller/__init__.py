@@ -4,6 +4,7 @@ from PyQt4 import QtCore
 from zonu import model
 from zonu import ui
 import retrieveboardthread
+import retrievethreadthread
 
 
 class Controller(object):
@@ -49,16 +50,35 @@ class Controller(object):
             
             thread = retrieveboardthread.RetrieveBoardThread(tree_widget_item.board_iden)
             thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
-                           self._OnBoardTreeClickBoardRetreivedReady)            
+                           self._OnBoardTreeClickBoardReady)            
             thread.start()
             
             self.thread_pool.append(thread)
 
-    def _OnBoardTreeClickBoardRetreivedReady(self, board):        
-        board_view = ui.BoardView(self.view.main_window, self.config)
+    def _OnBoardTreeClickBoardReady(self, board):        
+        board_view = ui.BoardView(self.view.main_window, board.board_iden, self.config)
         board_view.UpdateHeadlines(board.GetHeadlines())
+        
+        QtCore.QObject.connect(board_view.thread_list.GetTreeWidget(),
+                               QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
+                               self._OnThreadListItemClick)
+                                                               
         self.view.main_window.SetContent(board_view)
     
+    def _OnThreadListItemClick(self, tree_widget_item, col):
+        self.view.main_window.content.SetLoadingThread()
+        
+        thread = retrievethreadthread.RetrieveThreadThread(tree_widget_item.board_iden,
+                                                           tree_widget_item.thread_num)
+        thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
+                       self._OnThreadListItemClickReady)
+        thread.start()
+        
+        self.thread_pool.append(thread)
+        
+    def _OnThreadListItemClickReady(self, thread):
+        self.view.main_window.content.UpdateThread(thread)
+        
     def _OnExit(self):
         self.config.main_window_size = (self.view.main_window.size().width(),
                                         self.view.main_window.size().height())

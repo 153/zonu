@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
 from PyQt4 import QtGui
-import boardview
 import sidebar
-import threadlist
+import welcomescreen
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -32,9 +31,8 @@ class MainWindow(QtGui.QMainWindow):
         
         # Put the sidebar and the right panel in an vsplitter        
         self.vsplitter = QtGui.QSplitter(self)
-        
         self.sidebar = sidebar.Sidebar(self, self.config)
-        self.content = boardview.BoardView(self, self.config).GetMainWidget()         
+        self.content = welcomescreen.WelcomeScreen(self).GetMainWidget()
         
         self.vsplitter.addWidget(self.sidebar)
         self.vsplitter.addWidget(self.content)

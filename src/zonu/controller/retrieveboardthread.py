@@ -1,4 +1,4 @@
-#!/usr/bin/python2.5
+#!/usr/bin/python
 
 from PyQt4 import QtCore
 from zonu import model

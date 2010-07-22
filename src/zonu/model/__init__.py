@@ -31,7 +31,20 @@ class Board(object):
             
         return headlines
 
-
+    def GetThread(self, thread_num, restriction=''):
+        thread_dict = self.mod.GetThread(self.board_iden, thread_num,
+                                         restriction)
+        posts = []
+        
+        for post_dict in thread_dict['posts']:
+            posts.append(Post(post_dict['num'],
+                              post_dict['author'],
+                              post_dict['email'],
+                              post_dict['comment']))
+        
+        return Thread(self.board_iden, posts)
+        
+        
 class Headline(object):
     """A headline on a board."""
     def __init__(self, thread_num, subject, num_posts, author):
@@ -39,6 +52,23 @@ class Headline(object):
         self.subject = subject
         self.num_posts = num_posts
         self.author = author
+
+
+class Thread(object):
+    
+    def __init__(self, board_iden, posts):
+        self.board_iden = board_iden
+        self.posts = posts
+
+
+class Post(object):
+    
+    def __init__(self, num, author, email, comment):
+        self.num = num
+        self.author = author
+        self.email = email
+        self.comment = comment
+        
 
 class SiteIden(object):
     """An identifier for a Site."""

@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 from PyQt4 import QtCore
+from zonu import model
 from zonu import ui
+import boardupdatethread
 
 
 class Controller(object):
@@ -24,6 +26,11 @@ class Controller(object):
         mw.connect(mw.exit_action, QtCore.SIGNAL('triggered()'),
                    self._OnMenuExit)
     
+        # Connect to main window sidebar items
+        mw.connect(mw.sidebar.board_tree,
+                   QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
+                   self._OnBoardTreeClick)
+        
     def _OnLastWindowClosed(self):
         self._OnExit()
 
@@ -33,6 +40,15 @@ class Controller(object):
     def _OnMenuExit(self):
         self._OnExit()
     
+    def _OnBoardTreeClick(self, tree_widget_item, col):
+        if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
+            loading_board_view = ui.LoadingBoardView(self.view.main_window)
+            self.view.main_window.SetContent(loading_board_view)
+            
+            thread = boardupdatethread.BoardUpdateThread(self.view, self.config,
+                                                         tree_widget_item.board_iden)
+            thread.start()
+            
     def _OnExit(self):
         self.config.main_window_size = (self.view.main_window.size().width(),
                                         self.view.main_window.size().height())

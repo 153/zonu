@@ -25,19 +25,20 @@ class Board(object):
         
         for headline_dict in headline_dicts:
             headlines.append(Headline(headline_dict['thread_num'],
-                                      headline_dict['subject'],
-                                      headline_dict['num_posts']))
+                                      headline_dict['subject'],                                      
+                                      headline_dict['num_posts'],
+                                      headline_dict['author']))
             
         return headlines
 
 
 class Headline(object):
     """A headline on a board."""
-    def __init__(self, thread_num, subject, num_posts):
+    def __init__(self, thread_num, subject, num_posts, author):
         self.thread_num = thread_num
         self.subject = subject
         self.num_posts = num_posts
-
+        self.author = author
 
 class SiteIden(object):
     """An identifier for a Site."""
@@ -68,6 +69,8 @@ class ConfigFile(object):
     
     def __init__(self, file_name):        
         self.main_window_size = (800, 600)
+        
+        self.num_threads_to_list = 40
         
         self.all_boards = [
             {'name': 'world4ch',

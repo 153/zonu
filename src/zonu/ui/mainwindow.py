@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-
 from PyQt4 import QtGui
+import boardview
 import sidebar
+import threadlist
+
 
 class MainWindow(QtGui.QMainWindow):
     
@@ -29,13 +31,17 @@ class MainWindow(QtGui.QMainWindow):
         bbs_menu.addAction(self.exit_action)
         
         # Put the sidebar and the right panel in an vsplitter        
+        self.vsplitter = QtGui.QSplitter(self)
+        
         self.sidebar = sidebar.Sidebar(self, self.config)
-        self.sidebar2 = sidebar.Sidebar(self, self.config)
+        self.content = boardview.BoardView(self, self.config).GetMainWidget()         
         
-        vsplitter = QtGui.QSplitter(self)
+        self.vsplitter.addWidget(self.sidebar)
+        self.vsplitter.addWidget(self.content)
         
-        vsplitter.addWidget(self.sidebar)
-        vsplitter.addWidget(self.sidebar2)
-        
-        self.setCentralWidget(vsplitter)
-        
+        self.setCentralWidget(self.vsplitter)
+    
+    def SetContent(self, content):
+        self.content.GetMainWidget().setVisible(False)
+        self.vsplitter.addWidget(content)
+        self.content = content

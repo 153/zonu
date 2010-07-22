@@ -22,7 +22,8 @@ def GetHeadlines(board_iden):
         thread_num = int(thread_num)
         num_posts = int(num_posts)
 
-        headline_dicts.append({'num_posts': num_posts,
+        headline_dicts.append({'author': name,
+                               'num_posts': num_posts,
                                'subject': subject,
                                'thread_num': thread_num})
     

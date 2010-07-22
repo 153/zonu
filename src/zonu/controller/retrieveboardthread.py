@@ -5,6 +5,11 @@ from zonu import model
 
 
 class RetrieveBoardThread(QtCore.QThread):
+    """Use this thread to retrieve a board in the background.
+    
+    When the board is retrieved, a 'ready(PyQt_PyObject)' signal is
+    emitted, with the sole argument being the model.Board instance.    
+    """
     
     def __init__(self, board_iden):
         QtCore.QThread.__init__(self)        

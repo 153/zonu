@@ -21,6 +21,7 @@ def GetHeadlines(board_iden):
             continue
 
         subject = unicode(subject, 'utf-8', 'ignore')
+        subject = _Filter(subject)
         thread_num = int(thread_num)
         num_posts = int(num_posts)
 
@@ -64,6 +65,8 @@ def GetThread(board_iden, thread_num, restriction):
         comment = json_dict[str(post_num)]['com']
         comment = unicode(comment)
         
+        comment = _Filter(comment)
+        
         posts.append({'author': name,
                       'comment': comment,
                       'email': email,
@@ -73,3 +76,9 @@ def GetThread(board_iden, thread_num, restriction):
     return {'posts': posts,
             'subject': subject}
     
+
+def _Filter(s):
+    s = s.replace('<br/>', '\n')
+    s = s.replace('&quot;', '"')
+
+    return s

@@ -154,3 +154,7 @@ class ConfigFile(object):
     def Save(self):
         pass
     
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        #print name, value
+        

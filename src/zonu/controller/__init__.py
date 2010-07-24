@@ -30,7 +30,11 @@ class Controller(object):
         mw.connect(mw.exit_action, QtCore.SIGNAL('triggered()'),
                    self._OnMenuExit)
     
-        # Connect to main window sidebar items
+        # Connect main window splitter
+        mw.connect(mw.vsplitter, QtCore.SIGNAL('splitterMoved(int,int)'),
+                   self._OnMainWindowVSplitterMoved)
+        
+        # Connect main window sidebar items
         mw.connect(mw.sidebar.board_tree,
                    QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
                    self._OnBoardTreeClick)
@@ -50,7 +54,10 @@ class Controller(object):
         # TODO(metlingwax): Maybe make this work based on the user's browser
         # preference, instead of just firefox.
         os.system('firefox http://zonu.sageru.org')
-        
+    
+    def _OnMainWindowVSplitterMoved(self, pos, idx):
+        self.config.sidebar_width = pos
+    
     def _OnBoardTreeClick(self, tree_widget_item, col):
         if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
             loading_board_view = ui.LoadingBoardView(self.view.main_window)

@@ -13,7 +13,7 @@ _DEFAULT_CONFIG['general']['num_threads_to_list'] = 40
 _DEFAULT_CONFIG['ui'] = dict()
 _DEFAULT_CONFIG['ui']['sidebar_width'] = 175
 _DEFAULT_CONFIG['ui']['main_window_size'] = [800, 600]
-
+_DEFAULT_CONFIG['ui']['threadlist_height'] = 400
 
 _DEFAULT_BOARDS = {'boards':
                    [{'name': 'world4ch',
@@ -91,7 +91,7 @@ class ConfigDir(object):
         boards_yaml_path = os.path.join(self.dir_path, self._BOARDS_FILE_NAME)
         
         config_dict = dict()
-        config_dict['general'] = self.general,
+        config_dict['general'] = self.general
         config_dict['ui'] = self.ui
         yaml.dump(config_dict, open(config_yaml_path, 'w'))
         

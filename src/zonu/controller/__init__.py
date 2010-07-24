@@ -76,12 +76,20 @@ class Controller(object):
                                   self.config)
         board_view.UpdateHeadlines(retrieve_headlines_ret.headlines)
         
-        QtCore.QObject.connect(board_view.thread_list.GetTreeWidget(),
-                               QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
-                               self._OnThreadListItemClick)
-                                                                   
+        
+        board_view.connect(board_view.GetSplitter(),
+                           QtCore.SIGNAL('splitterMoved(int,int)'),
+                           self._OnBoardViewSplitterMoved)
+
+        board_view.connect(board_view.thread_list.GetTreeWidget(),
+                           QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
+                           self._OnThreadListItemClick)
+                                                                           
         self.view.main_window.SetContent(board_view)
-    
+            
+    def _OnBoardViewSplitterMoved(self, pos, idx):
+        self.config.ui['threadlist_height'] = pos
+        
     def _OnThreadListItemClick(self, tree_widget_item, col):
         self.view.main_window.content.SetLoadingThread()
         

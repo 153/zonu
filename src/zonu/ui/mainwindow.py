@@ -43,6 +43,7 @@ class MainWindow(QtGui.QMainWindow):
         self.content.GetMainWidget().setVisible(False)
         self.vsplitter.addWidget(content)
         self.content = content
+        content.FixSizes()
         self.FixSizes()
         
     def FixSizes(self):

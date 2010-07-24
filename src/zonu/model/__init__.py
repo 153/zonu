@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
+import kareha
 import world4ch
 
 
 site_type_mods = {
+    'kareha': kareha,
     'world4ch': world4ch
 }
 
@@ -75,10 +77,11 @@ class Post(object):
 
 class SiteIden(object):
     """An identifier for a Site."""
-    def __init__(self, name, site_type, title, board_idens):
+    def __init__(self, name, site_type, title, url, board_idens):
         self.name = name
         self.site_type = site_type
         self.title = title
+        self.url = url
         self.board_idens = board_idens
         
     def __hash__(self):
@@ -111,6 +114,7 @@ class ConfigFile(object):
             {'name': 'world4ch',
              'title': 'world4ch',
              'type': 'world4ch',
+             'url': 'http://dis.4chan.org',
              'boards': [{'name': 'vip',
                          'title': 'News 4 VIP'},
                         {'name': 'prog',
@@ -118,8 +122,10 @@ class ConfigFile(object):
             {'name': '4ch',
              'title': '4-ch',
              'type': 'kareha',
+             'url': 'http://4-ch.net',
              'boards':  [{'name': 'general',
-                          'title': 'General'}]},
+                          'title': 'General',
+                          'rss_url': 'http://4-ch.net/rss/general.rss'}]},
             ]
 
     def GetSiteIdens(self):
@@ -129,7 +135,8 @@ class ConfigFile(object):
             board_idens = []
             
             site_iden = SiteIden(site_dict['name'], site_dict['type'],
-                                 site_dict['title'], board_idens)
+                                 site_dict['title'], site_dict['url'],
+                                 board_idens)
             site_idens.append(site_iden)
             
             for board_dict in site_dict['boards']:

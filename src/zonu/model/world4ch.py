@@ -33,12 +33,9 @@ def GetHeadlines(board_iden):
     return headline_dicts
 
 
-def GetThread(board_iden, thread_num, restriction):
+def GetThread(board_iden, thread_num):
     json_url = 'http://dis.4chan.org/json/%s/%d' % (board_iden.name,
-                                                    thread_num)
-    if restriction:
-        json_url += '/' + restriction
-    
+                                                    thread_num)    
     json_data = urllib2.urlopen(json_url).read()        
 
     try:
@@ -47,33 +44,11 @@ def GetThread(board_iden, thread_num, restriction):
         raise Exception()
     
     subject = json_dict['1']['sub']
-        
-    posts = []
-    post_nums = sorted([int(k) for k in json_dict])
-    
-    for post_num in post_nums:            
-        g = re.search('<a href=\"(.*)\">(.*)<\/a>',
-                      json_dict[str(post_num)]['name'])
-        if g:
-            name = g.group(2)
-            email = g.group(1).split(':', 1)
-        else:
-            name = json_dict[str(post_num)]['name']
-            email = None
-        
-        time = int(json_dict[str(post_num)]['now'])
-        comment = json_dict[str(post_num)]['com']
-        comment = unicode(comment)
-        
-        comment = _Filter(comment)
-        
-        posts.append({'author': name,
-                      'comment': comment,
-                      'email': email,
-                      'num': post_num,
-                      'time': time})
-        
-    return {'posts': posts,
+    author = json_dict['1']['author']
+    num_posts = len(json_dict)
+            
+    return {'author': author,
+            'num_posts': num_posts,
             'subject': subject}
     
 

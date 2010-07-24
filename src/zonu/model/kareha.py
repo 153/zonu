@@ -47,8 +47,24 @@ def GetHeadlines(board_iden):
     return headline_dicts
 
 
+def GetThread(board_iden, thread_num):
+    res_url = '%s/%s/res/%d.html' % (board_iden.site_iden.url,
+                                     board_iden.name, thread_num)
+    
+    res_html = urllib2.urlopen(res_url).read()
+    res_lines = res_html.split('\n')
+    
+    header_dict = eval(res_lines[0][4:-4].replace('\' =>', '\': '))
+    
+    return {'author': header_dict['author'],
+            'num_posts': header_dict['postcount'],
+            'subject': header_dict['title']}
+    
+    
 def GetThreadURL(board_iden, thread_num, restriction):    
     thread_url = '%s/%s/kareha.pl/%d/%s' % (board_iden.site_iden.url,
                                             board_iden.name, thread_num,
                                             restriction)
     return thread_url
+
+

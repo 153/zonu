@@ -12,8 +12,7 @@ from zonu import ui
 def main():
     app = QtGui.QApplication(sys.argv)
     
-    config_dir_path = os.path.join(str(QtCore.QDir.homePath()),
-                                   '.zonu')
+    config_dir_path = os.path.join(str(QtCore.QDir.homePath()), '.zonu')
     config = model.ConfigDir(config_dir_path)
     view = ui.View(config)
     

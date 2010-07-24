@@ -38,18 +38,12 @@ class Board(object):
             
         return headlines
 
-    def GetThread(self, thread_num, restriction=''):
-        thread_dict = self.mod.GetThread(self.board_iden, thread_num,
-                                         restriction)
-        posts = []
-        
-        for post_dict in thread_dict['posts']:
-            posts.append(Post(post_dict['num'],
-                              post_dict['author'],
-                              post_dict['email'],
-                              post_dict['comment']))
-        
-        return Thread(self.board_iden, posts)
+    def GetThread(self, thread_num):
+        thread_dict = self.mod.GetThread(self.board_iden, thread_num)
+                
+        return Thread(self.board_iden, thread_dict['subject'],
+                      thread_dict['author'],
+                      thread_dict['num_posts'])
     
     def GetThreadURL(self, thread_num, restriction=''):
         return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
@@ -66,10 +60,12 @@ class Headline(object):
 
 class Thread(object):
     
-    def __init__(self, board_iden, posts):
+    def __init__(self, board_iden, subject, author, num_posts):
         self.board_iden = board_iden
-        self.posts = posts
-
+        self.subject = subject
+        self.author = author
+        self.num_posts = num_posts
+    
 
 class Post(object):
     """A Post in a thread."""

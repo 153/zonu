@@ -25,7 +25,10 @@ class ThreadList(QtGui.QTreeWidget):
             item.setText(1, str(headline.num_posts))
             item.setText(2, headline.author)
             item.setText(3, str(headline.thread_num))
-            
+        
+        self.resizeColumnToContents(0)
+        self.setColumnWidth(0, self.columnWidth(0) + 20)
+        
     def GetTreeWidget(self):
         return self
 

@@ -15,6 +15,7 @@ _DEFAULT_CONFIG['ui']['sidebar_width'] = 175
 _DEFAULT_CONFIG['ui']['main_window_size'] = [800, 600]
 _DEFAULT_CONFIG['ui']['threadlist_height'] = 400
 
+
 _DEFAULT_BOARDS = {'boards':
                    [{'name': 'world4ch',
                     'title': 'world4ch',

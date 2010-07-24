@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from PyQt4 import QtCore
 from PyQt4 import QtGui
 import mainwindowcontent
 
@@ -8,6 +9,7 @@ class LoadingBoardView(mainwindowcontent.MainWindowContent, QtGui.QLabel):
         mainwindowcontent.MainWindowContent.__init__(self)
         QtGui.QLabel.__init__(self, parent)
         
+        self.setAlignment(QtCore.Qt.AlignCenter)
         self.setText('Loading board...')
     
     def GetMainWidget(self):

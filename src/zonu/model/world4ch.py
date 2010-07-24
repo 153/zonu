@@ -55,7 +55,7 @@ def GetThread(board_iden, thread_num):
 def _Filter(s):
     s = s.replace('<br/>', '\n')
     s = s.replace('&quot;', '"')
-
+    s = s.replace('&#039;', '\'')  # single quote
     return s
 
 

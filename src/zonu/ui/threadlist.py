@@ -14,8 +14,10 @@ class ThreadList(QtGui.QTreeWidget):
     def _Update(self, headlines):
         self.clear()
         
-        if len(headlines) > self.config.num_threads_to_list:
-            headlines = headlines[:self.config.num_threads_to_list]
+        num_threads_to_list = self.config.general['num_threads_to_list']
+        
+        if len(headlines) > num_threads_to_list:
+            headlines = headlines[:num_threads_to_list]
         
         for headline in headlines:
             item = _ThreadTreeWidgetItem(self, self.board_iden, headline.thread_num)

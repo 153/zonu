@@ -56,7 +56,7 @@ class Controller(object):
         os.system('firefox http://zonu.sageru.org')
     
     def _OnMainWindowVSplitterMoved(self, pos, idx):
-        self.config.sidebar_width = pos
+        self.config.ui['sidebar_width'] = pos
     
     def _OnBoardTreeClick(self, tree_widget_item, col):
         if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
@@ -94,10 +94,10 @@ class Controller(object):
         self.view.main_window.content.UpdateThread(thread)
         
     def _OnExit(self):
-        self.config.sidebar_width = self.view.main_window.vsplitter.sizes()[0]
+        self.config.ui['sidebar_width'] = self.view.main_window.vsplitter.sizes()[0]
         
-        self.config.main_window_size = (self.view.main_window.size().width(),
-                                        self.view.main_window.size().height())
+        self.config.ui['main_window_size'] = (self.view.main_window.size().width(),
+                                              self.view.main_window.size().height())
         
         self.config.Save()
 

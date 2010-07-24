@@ -13,8 +13,8 @@ class MainWindow(QtGui.QMainWindow):
         self.config = config
         
         self.setWindowTitle('Zonu BBS Viewer')
-        self.resize(config.main_window_size[0],
-                    config.main_window_size[1])
+        self.resize(config.ui['main_window_size'][0],
+                    config.ui['main_window_size'][1])
 
         # Build the menu
         menu_bar = self.menuBar()
@@ -47,7 +47,7 @@ class MainWindow(QtGui.QMainWindow):
         
     def FixSizes(self):
         sizes = self.vsplitter.sizes()
-        sizes[-1] = sizes[-1] + sizes[0] - self.config.sidebar_width
-        sizes[0] = self.config.sidebar_width
+        sizes[-1] = sizes[-1] + sizes[0] - self.config.ui['sidebar_width']
+        sizes[0] = self.config.ui['sidebar_width']
         self.vsplitter.setSizes(sizes)
         

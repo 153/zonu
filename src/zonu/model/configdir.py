@@ -48,7 +48,7 @@ class ConfigDir(object):
     """A Configuration Setup."""
     
     _CONFIG_FILE_NAME = 'config.yaml'
-    _SITES_FILE_NAME = 'boards.yaml'
+    _SITES_FILE_NAME = 'sites.yaml'
     
     def __init__(self, dir_path):        
         self.dir_path = dir_path

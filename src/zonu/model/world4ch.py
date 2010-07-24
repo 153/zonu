@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import re
 import urllib2
 import simplejson
 
@@ -15,10 +14,13 @@ def GetHeadlines(board_iden):
     for line in subjects_data.split('\n'):
         toks = line.split('<>')
         
-        try:
-            subject, name, unused_whatisthis, thread_num, num_posts, unused_last_msg, unused_last_time = toks
-        except ValueError:
+        if len(toks) != 7:
             continue
+            
+        subject = toks[0]
+        name = toks[1]            
+        thread_num = toks[3]
+        num_posts = toks[4]
 
         subject = unicode(subject, 'utf-8', 'ignore')
         subject = _Filter(subject)

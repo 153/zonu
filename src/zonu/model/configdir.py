@@ -16,7 +16,7 @@ _DEFAULT_CONFIG['ui']['main_window_size'] = [800, 600]
 _DEFAULT_CONFIG['ui']['threadlist_height'] = 400
 
 
-_DEFAULT_BOARDS = {'boards':
+_DEFAULT_BOARDS = {'all_boards':
                    [{'name': 'world4ch',
                     'title': 'world4ch',
                     'type': 'world4ch',
@@ -59,8 +59,12 @@ class ConfigDir(object):
         if not os.path.exists(dir_path):
             os.mkdir(self.dir_path)
             print 'Created', self.dir_path        
+            
+        if not os.path.exists(config_yaml_path):
             yaml.dump(_DEFAULT_CONFIG, open(config_yaml_path, 'w'))
             print 'Created', config_yaml_path    
+        
+        if not os.path.exists(boards_yaml_path):
             yaml.dump(_DEFAULT_BOARDS, open(boards_yaml_path, 'w'))        
             print 'Created', boards_yaml_path 
         
@@ -69,12 +73,12 @@ class ConfigDir(object):
         self.ui = zonu_dict['ui']
         
         boards_dict = yaml.load(open(boards_yaml_path))
-        self.boards =  boards_dict['boards']
+        self.all_boards =  boards_dict['all_boards']
 
     def GetSiteIdens(self):
         site_idens = []
         
-        for site_dict in self.boards:
+        for site_dict in self.all_boards:
             board_idens = []
             
             site_iden = site.SiteIden(site_dict['name'], site_dict['type'],
@@ -105,7 +109,7 @@ class ConfigDir(object):
         yaml.dump(config_dict, open(config_yaml_path, 'w'))
         
         boards_dict = dict()
-        boards_dict['boards'] = self.boards
+        boards_dict['all_boards'] = self.all_boards
         yaml.dump(boards_dict, open(boards_yaml_path, 'w'))
         
     

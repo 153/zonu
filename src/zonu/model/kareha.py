@@ -44,4 +44,3 @@ def GetThreadURL(board_iden, thread_num, restriction):
                                             board_iden.name, thread_num,
                                             restriction)
     return thread_url
- 

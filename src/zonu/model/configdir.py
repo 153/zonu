@@ -30,8 +30,7 @@ _DEFAULT_SITES = {'all_sites':
                      'type': 'kareha',
                      'url': 'http://4-ch.net',
                      'boards':  [{'name': 'general',
-                                  'title': 'General',
-                                  'rss_url': 'http://4-ch.net/rss/general.rss'}]},
+                                  'title': 'General'}]},
                     
                     {'name': 'saovq',
                      'title': 'SAoVQ',

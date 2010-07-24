@@ -12,8 +12,16 @@ def GetHeadlines(board_iden):
     else:
         rss_url = '%s/%s/index.rss' % (board_iden.site_iden.url,
                                        board_iden.name)
-        
+    
     rss_data = urllib2.urlopen(rss_url).read()
+    
+    # This is a hack to convert SJIS to utf-8 because python XML parsers
+    # don't support parsing SJIS.
+    if rss_data.startswith('<?xml version="1.0" encoding="shift_jis"?>'):
+        rss_data = unicode(rss_data, 'shiftjis').encode('utf8')
+        rss_data = rss_data.replace('<?xml version="1.0" encoding="shift_jis"?>',
+                                    '<?xml version="1.0" encoding="utf-8"?>')     
+    
     rss  = ElementTree.fromstring(rss_data)
     
     headline_dicts = []    

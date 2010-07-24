@@ -31,6 +31,14 @@ _DEFAULT_BOARDS = {'boards':
                      'boards':  [{'name': 'general',
                                   'title': 'General',
                                   'rss_url': 'http://4-ch.net/rss/general.rss'}]},
+                    
+                    {'name': 'saovq',
+                     'title': 'SAoVQ',
+                     'type': 'kareha',
+                     'url': 'http://www.secretareaofvipquality.net',
+                     'boards': [{'name': 'saovq',
+                                 'title': 'Text BBS'}]},
+                     
                     ]}
 
 

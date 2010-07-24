@@ -98,6 +98,8 @@ class ConfigFile(object):
     """A Configuration File."""
     
     def __init__(self, file_name):        
+        
+        self.sidebar_width = 175
         self.main_window_size = (800, 600)
         
         self.num_threads_to_list = 40

@@ -82,6 +82,8 @@ class Controller(object):
         self.view.main_window.content.UpdateThread(thread)
         
     def _OnExit(self):
+        self.config.sidebar_width = self.view.main_window.vsplitter.sizes()[0]
+        
         self.config.main_window_size = (self.view.main_window.size().width(),
                                         self.view.main_window.size().height())
         

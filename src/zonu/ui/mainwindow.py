@@ -38,8 +38,16 @@ class MainWindow(QtGui.QMainWindow):
         self.vsplitter.addWidget(self.content)
         
         self.setCentralWidget(self.vsplitter)
-    
+        
     def SetContent(self, content):
         self.content.GetMainWidget().setVisible(False)
         self.vsplitter.addWidget(content)
         self.content = content
+        self.FixSizes()
+        
+    def FixSizes(self):
+        sizes = self.vsplitter.sizes()
+        sizes[-1] = sizes[-1] + sizes[0] - self.config.sidebar_width
+        sizes[0] = self.config.sidebar_width
+        self.vsplitter.setSizes(sizes)
+        

@@ -27,11 +27,11 @@ class BoardView(mainwindowcontent.MainWindowContent, QtGui.QSplitter):
         return self
     
     def SetLoadingThread(self):
-       pass 
+        pass 
     
     def UpdateHeadlines(self, headlines):
         self.thread_list._Update(headlines)
     
-    def UpdateThread(self, thread):
-        self.thread_view._Update(thread)
+    def UpdateThreadURL(self, thread_url):
+        self.thread_view._Update(thread_url)
     

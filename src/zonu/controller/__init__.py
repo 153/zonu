@@ -72,19 +72,16 @@ class Controller(object):
         QtCore.QObject.connect(board_view.thread_list.GetTreeWidget(),
                                QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
                                self._OnThreadListItemClick)
-                                                               
+                                                                   
         self.view.main_window.SetContent(board_view)
     
     def _OnThreadListItemClick(self, tree_widget_item, col):
         self.view.main_window.content.SetLoadingThread()
         
-        thread = retrievethreadthread.RetrieveThreadThread(tree_widget_item.board_iden,
-                                                           tree_widget_item.thread_num)
-        thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
-                       self._OnThreadListItemClickReady)
-        thread.start()
+        board = model.Board(tree_widget_item.board_iden)
+        thread_url = board.GetThreadURL(tree_widget_item.thread_num, 'l40')
         
-        self.thread_pool.append(thread)
+        self.view.main_window.content.UpdateThreadURL(thread_url)
         
     def _OnThreadListItemClickReady(self, thread):
         self.view.main_window.content.UpdateThread(thread)

@@ -82,3 +82,8 @@ def _Filter(s):
     s = s.replace('&quot;', '"')
 
     return s
+
+
+def GetThreadURL(board_iden, thread_num, restriction):
+    return 'http://dis.4chan.org/read/%s/%d/%s' % (board_iden.name, thread_num, restriction)
+    

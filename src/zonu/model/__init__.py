@@ -43,6 +43,9 @@ class Board(object):
                               post_dict['comment']))
         
         return Thread(self.board_iden, posts)
+    
+    def GetThreadURL(self, thread_num, restriction=''):
+        return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
         
         
 class Headline(object):

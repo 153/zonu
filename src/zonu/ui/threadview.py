@@ -1,22 +1,17 @@
 #!/usr/bin/python
 
-from PyQt4 import QtGui
+from PyQt4 import QtCore
+from PyQt4 import QtWebKit
 
 
-class ThreadView(QtGui.QScrollArea):
+class ThreadView(QtWebKit.QWebView):
     
     def __init__(self, parent, config):
-        QtGui.QScrollArea.__init__(self, parent)  
+        QtWebKit.QWebView.__init__(self, parent)
         self.config = config
-        self.label = QtGui.QLabel(self)
         
-    def _Update(self, thread):
-        label_lines = []
+    def _Update(self, thread_url):
+        self.GetWebView().load(QtCore.QUrl(thread_url))
         
-        for post in thread.posts:
-            label_lines.append('%d: %s' % (post.num, post.comment))
-            
-        label_text = u'\n\n'.join(label_lines)
-        self.label.setText(label_text)
-        
-        self.setWidget(self.label)
+    def GetWebView(self):
+        return self

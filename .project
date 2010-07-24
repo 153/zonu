@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.python.pydev.pythonNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/zonu/controller/retrieveheadlinesthread.py</name>
+			<type>1</type>
+			<location>/home/daniel/programming/zonu/src/zonu/controller/retrieveheadlinesthread.py</location>
+		</link>
+	</linkedResources>
 </projectDescription>

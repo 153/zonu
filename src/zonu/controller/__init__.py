@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 from PyQt4 import QtCore
 from zonu import model
 from zonu import ui
@@ -38,11 +39,18 @@ class Controller(object):
         self._OnExit()
 
     def _OnMenuAbout(self):
-        self.view.ShowAboutDialog()
+        about_dialog = self.view.ShowAboutDialog()
+        about_dialog.connect(about_dialog.button, QtCore.SIGNAL('clicked()'),
+                             self._OnAboutDialogWebsiteButtonClick)
     
     def _OnMenuExit(self):
         self._OnExit()
     
+    def _OnAboutDialogWebsiteButtonClick(self):
+        # TODO(metlingwax): Maybe make this work based on the user's browser
+        # preference, instead of just firefox.
+        os.system('firefox http://zonu.sageru.org')
+        
     def _OnBoardTreeClick(self, tree_widget_item, col):
         if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
             loading_board_view = ui.LoadingBoardView(self.view.main_window)

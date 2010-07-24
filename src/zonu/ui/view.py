@@ -15,4 +15,5 @@ class View(object):
     def ShowAboutDialog(self):
         about_dialog = aboutdialog.AboutDialog(self.main_window)
         about_dialog.show() 
+        return about_dialog
     

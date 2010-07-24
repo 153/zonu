@@ -20,4 +20,3 @@ class ThreadView(QtGui.QScrollArea):
         self.label.setText(label_text)
         
         self.setWidget(self.label)
-        

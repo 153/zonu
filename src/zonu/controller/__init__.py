@@ -3,7 +3,7 @@
 from PyQt4 import QtCore
 from zonu import model
 from zonu import ui
-import retrieveboardthread
+import retrieveheadlinesthread
 import retrievethreadthread
 
 
@@ -48,16 +48,18 @@ class Controller(object):
             loading_board_view = ui.LoadingBoardView(self.view.main_window)
             self.view.main_window.SetContent(loading_board_view)
             
-            thread = retrieveboardthread.RetrieveBoardThread(tree_widget_item.board_iden)
+            thread = retrieveheadlinesthread.RetrieveHeadlinesThread(tree_widget_item.board_iden)
             thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
                            self._OnBoardTreeClickBoardReady)            
             thread.start()
             
             self.thread_pool.append(thread)
 
-    def _OnBoardTreeClickBoardReady(self, board):        
-        board_view = ui.BoardView(self.view.main_window, board.board_iden, self.config)
-        board_view.UpdateHeadlines(board.GetHeadlines())
+    def _OnBoardTreeClickBoardReady(self, retrieve_headlines_ret):        
+        board_view = ui.BoardView(self.view.main_window,
+                                  retrieve_headlines_ret.board_iden,
+                                  self.config)
+        board_view.UpdateHeadlines(retrieve_headlines_ret.headlines)
         
         QtCore.QObject.connect(board_view.thread_list.GetTreeWidget(),
                                QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),

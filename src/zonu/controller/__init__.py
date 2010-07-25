@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import webbrowser
 import os
 from PyQt4 import QtCore
 from zonu import model
@@ -100,7 +101,7 @@ class Controller(object):
     def _OnAboutDialogWebsiteButtonClick(self):
         # TODO(meltingwax): Maybe make this work based on the user's browser
         # preference, instead of just firefox.
-        os.system('firefox http://zonu.sageru.org')
+        webbrowser.open('http://zonu.sageru.org')
     
     def _OnMainWindowVSplitterMoved(self, pos, idx):
         self.config.ui['sidebar_width'] = pos

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import cPickle as pickle
 import os
 import yaml
 import board
@@ -10,6 +11,7 @@ _DEFAULT_CONFIG = dict()
 _DEFAULT_CONFIG['general'] = dict()
 _DEFAULT_CONFIG['general']['last_used_version'] = '0.5'
 _DEFAULT_CONFIG['general']['num_threads_to_list'] = 40
+_DEFAULT_CONFIG['general']['board_crawl_rate'] = 60
 _DEFAULT_CONFIG['ui'] = dict()
 _DEFAULT_CONFIG['ui']['sidebar_width'] = 175
 _DEFAULT_CONFIG['ui']['main_window_size'] = [800, 600]
@@ -42,18 +44,25 @@ _DEFAULT_SITES = {'all_sites':
                     ]}
 
 
+_DEFAULT_BOARDS_CACHE = dict()
+_DEFAULT_BOARDS_CACHE['last_read_boards'] = dict()
+_DEFAULT_BOARDS_CACHE['last_retrieved_boards'] = dict() 
+
 
 class ConfigDir(object):
     """A Configuration Setup."""
     
     _CONFIG_FILE_NAME = 'config.yaml'
     _SITES_FILE_NAME = 'sites.yaml'
+    _BOARDS_CACHE_FILE_NAME = 'boards.cache'
     
+        
     def __init__(self, dir_path):        
         self.dir_path = dir_path
         
         config_yaml_path = os.path.join(self.dir_path, self._CONFIG_FILE_NAME)
         sites_yaml_path = os.path.join(self.dir_path, self._SITES_FILE_NAME)
+        boards_cache_path = os.path.join(self.dir_path, self._BOARDS_CACHE_FILE_NAME)
         
         if not os.path.exists(dir_path):
             os.mkdir(self.dir_path)
@@ -67,6 +76,9 @@ class ConfigDir(object):
             yaml.dump(_DEFAULT_SITES, open(sites_yaml_path, 'w'))        
             print 'Created', sites_yaml_path 
         
+        if not os.path.exists(boards_cache_path):
+            pickle.dump(_DEFAULT_BOARDS_CACHE, open(boards_cache_path, 'w'))
+        
         zonu_dict = yaml.load(open(config_yaml_path))
         self.general = zonu_dict['general']
         self.ui = zonu_dict['ui']
@@ -74,6 +86,9 @@ class ConfigDir(object):
         boards_dict = yaml.load(open(sites_yaml_path))
         self.all_sites =  boards_dict['all_sites']
 
+        boards_cache = pickle.load(open(boards_cache_path))
+        self.boards_cache = boards_cache
+        
     def GetSiteIdens(self):
         site_idens = []
         

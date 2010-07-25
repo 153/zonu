@@ -18,6 +18,7 @@ def main():
     
     app_controller = controller.Controller(app, view, config)
     app_controller.BindView()
+    app_controller.StartBackgroundTasks()
     
     sys.exit(app.exec_())
     

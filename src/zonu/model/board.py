@@ -14,7 +14,14 @@ class BoardIden(object):
     def __hash__(self):
         return hash((self.site_iden, self.name))
 
-
+    def __eq__(self, other):
+        return (self.site_iden.name == other.site_iden.name
+                and self.name == other.name)
+    
+    def __repr__(self):
+        return 'BoardIden(%s, %s, %s, %s)' % (repr(self.site_iden), repr(self.name),
+                                              repr(self.title), repr(self.extra_info))
+ 
 class Board(object):
     """A Board."""
     def __init__(self, board_iden):
@@ -26,7 +33,12 @@ class Board(object):
             raise ValueError('Site type "%s" not implemented.' 
                              % board_iden.site_iden.site_type)
 
+        self.headlines = None
+
     def GetHeadlines(self):
+        """Get the headlines for this board. They will be stored in the
+        'headlines' attribute for later use, if needed.
+        """
         headlines = []
         headline_dicts = self.mod.GetHeadlines(self.board_iden)
         
@@ -36,6 +48,7 @@ class Board(object):
                                       headline_dict['num_posts'],
                                       headline_dict['author']))
             
+        self.headlines = headlines
         return headlines
 
     def GetThread(self, thread_num):
@@ -48,7 +61,38 @@ class Board(object):
     def GetThreadURL(self, thread_num, restriction=''):
         return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
         
+    def Diff(self, old_board):
+        """Generate a BoardDiff between this board and an older board.
         
+        Optionally, old_board can be None, in which case everything is considered new.
+        """
+        if self.headlines is None:
+            self.GetHeadlines()
+        
+        # Generate a diff of threads
+        if old_board is None:
+            old_thread_nums = set()
+        else:
+            old_thread_nums = set([headline.thread_num for headline in old_board.headlines])
+        
+        cur_thread_nums = set([headline.thread_num for headline in self.headlines])    
+        
+        new_thread_nums = cur_thread_nums - old_thread_nums
+        deleted_thread_nums = old_thread_nums - cur_thread_nums
+    
+        # Generate a diff of total posts
+        if old_board is None:
+            old_total_posts = 0
+        else:
+            old_total_posts = sum([headline.num_posts for headline in old_board.headlines])
+        
+        cur_total_posts = sum([headline.num_posts for headline in self.headlines]) 
+        
+        num_new_posts = cur_total_posts - old_total_posts
+        
+        return BoardDiff(new_thread_nums, deleted_thread_nums, num_new_posts)
+    
+    
 class Headline(object):
     """A headline on a board."""
     def __init__(self, thread_num, subject, num_posts, author):
@@ -74,4 +118,13 @@ class Post(object):
         self.author = author
         self.email = email
         self.comment = comment
+    
+    
+class BoardDiff(object):
+    """A diff between a board at different times."""
+    def __init__(self, new_thread_nums, deleted_thread_nums, num_new_posts):
+        self.new_thread_nums = new_thread_nums
+        self.deleted_thread_nums = deleted_thread_nums
+        self.num_new_posts = num_new_posts
+        
         

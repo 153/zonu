@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import time
+import urllib2
 from PyQt4 import QtCore
 from zonu import model
 
@@ -9,25 +11,36 @@ class RetrieveHeadlinesThread(QtCore.QThread):
     
     When the headlines are retrieved, a 'ready(PyQt_PyObject)' signal is
     emitted, with the sole argument being an object with two attributes:
-    'board_iden', which maps to the board iden, and 'headlines', which
-    maps to a list of model.Headline instances.  
-    """
+    'board_iden' and 'board'.
     
-    def __init__(self, board_iden):
+    Optionally, this thread takes a "delay" parameter, which if specified,
+    sets an amount of time (in seconds) to sleep before retrieving the
+    headline.
+    """
+    def __init__(self, board_iden, delay=0):
         QtCore.QThread.__init__(self)        
         self.board_iden = board_iden
+        self.delay = delay
         
     def run(self):
-        board = model.Board(self.board_iden)
-        headlines = board.GetHeadlines()
+        time.sleep(self.delay)
         
-        ret = _RetrieveHeadlinesReturn(self.board_iden, headlines)
+        board = model.Board(self.board_iden)
+        
+        while True:
+            try:
+                board.GetHeadlines()
+                break
+            except urllib2.URLError:
+                pass
+        
+        ret = _RetrieveHeadlinesReturn(self.board_iden, board)
         self.emit(QtCore.SIGNAL('ready(PyQt_PyObject)'), ret)
 
 
 class _RetrieveHeadlinesReturn(object):
     
-    def __init__(self, board_iden, headlines):
+    def __init__(self, board_iden, board):
         self.board_iden = board_iden
-        self.headlines = headlines
+        self.board = board
         

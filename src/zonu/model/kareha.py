@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import re
+import simplejson
 import urllib2
 import urlparse
 from xml.etree import ElementTree
@@ -65,7 +66,7 @@ def GetThread(board_iden, thread_num):
     res_html = urllib2.urlopen(res_url).read()
     res_lines = res_html.split('\n')
     
-    header_dict = eval(res_lines[0][4:-4].replace('\' =>', '\': '))
+    header_dict = simplejson.loads(res_lines[0][4:-4].replace('\' =>', '\': '))
     
     return {'author': header_dict['author'],
             'num_posts': header_dict['postcount'],

@@ -99,8 +99,6 @@ class Controller(object):
         self._OnExit()
     
     def _OnAboutDialogWebsiteButtonClick(self):
-        # TODO(meltingwax): Maybe make this work based on the user's browser
-        # preference, instead of just firefox.
         webbrowser.open('http://zonu.sageru.org')
     
     def _OnMainWindowVSplitterMoved(self, pos, idx):

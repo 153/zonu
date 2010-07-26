@@ -128,7 +128,7 @@ class ConfigDir(object):
         boards_dict['all_sites'] = self.all_sites
         yaml.dump(boards_dict, open(sites_yaml_path, 'w'))
         
-        #pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
+        pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
     
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)

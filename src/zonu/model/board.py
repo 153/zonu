@@ -26,14 +26,15 @@ class Board(object):
     """A Board."""
     def __init__(self, board_iden):
         self.board_iden = board_iden
-        
-        if board_iden.site_iden.site_type in site.site_type_mods:
-            self.mod = site.site_type_mods[board_iden.site_iden.site_type]
+        self.headlines = None
+        self._SetMod()
+    
+    def _SetMod(self):
+        if self.board_iden.site_iden.site_type in site.site_type_mods:
+            self.mod = site.site_type_mods[self.board_iden.site_iden.site_type]
         else:
             raise ValueError('Site type "%s" not implemented.' 
-                             % board_iden.site_iden.site_type)
-
-        self.headlines = None
+                             % self.board_iden.site_iden.site_type)
 
     def GetHeadlines(self):
         """Get the headlines for this board. They will be stored in the
@@ -60,6 +61,20 @@ class Board(object):
     
     def GetThreadURL(self, thread_num, restriction=''):
         return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
+    
+    def __setstate__(self, state):
+        """Restart instance from pickled state."""
+        for name, value in state.iteritems():
+            setattr(self, name, value)
+        
+        self._SetMod()
+        assert hasattr(self, 'mod')
+        
+    def __getstate__(self):
+        """Retrieve state for pickling."""
+        state = self.__dict__.copy()
+        del state['mod']
+        return state
     
     
 class Headline(object):

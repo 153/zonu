@@ -45,8 +45,8 @@ _DEFAULT_SITES = {'all_sites':
 
 
 _DEFAULT_BOARDS_CACHE = dict()
-_DEFAULT_BOARDS_CACHE['last_read_boards'] = dict()
-_DEFAULT_BOARDS_CACHE['last_retrieved_boards'] = dict() 
+_DEFAULT_BOARDS_CACHE['last_read'] = dict() 
+_DEFAULT_BOARDS_CACHE['last_retrieved'] = dict()
 
 
 class ConfigDir(object):

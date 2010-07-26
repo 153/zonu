@@ -62,10 +62,10 @@ class Controller(object):
     
     def _OnBoardWatcherReady(self, result):
         """This method is called when a board watcher thread finished retrieving its results."""
-        self.config.boards_cache['last_retrieved_boards'][result.board_iden] = result.board
+        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         
-        if result.board_iden not in self.config.boards_cache['last_read_boards']:
-            self.config.boards_cache['last_read_boards'][result.board_iden] = result.board
+        if result.board_iden not in self.config.boards_cache['last_read']:
+            self.config.boards_cache['last_read'][result.board_iden] = model.BoardState()
         
         self._UpdateBoardTree(result.board_iden)
         self._StartBoardWatcherThread(result.board_iden, delay=self.config.general['board_crawl_rate'])
@@ -75,9 +75,9 @@ class Controller(object):
         and the "last retrieved" state and updates the label in the board tree according
         to this.
         """
-        last_read_board = self.config.boards_cache['last_read_boards'].get(board_iden)
-        last_retrieved_board = self.config.boards_cache['last_retrieved_boards'][board_iden]
-        board_diff = last_retrieved_board.Diff(last_read_board)
+        last_read_state = self.config.boards_cache['last_read'].get(board_iden)
+        last_retrieved_state = self.config.boards_cache['last_retrieved'][board_iden]
+        board_diff = last_retrieved_state.Diff(last_read_state)
         
         board_tree = self.view.main_window.sidebar.board_tree
         
@@ -131,9 +131,7 @@ class Controller(object):
                                                               
         self.view.main_window.SetContent(board_view)
         
-        self.config.boards_cache['last_read_boards'][result.board_iden] = result.board
-        self.config.boards_cache['last_retrieved_boards'][result.board_iden] = result.board
-        self._UpdateBoardTree(result.board_iden)
+        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos
@@ -141,10 +139,18 @@ class Controller(object):
     def _OnThreadListItemClick(self, tree_widget_item, col):
         self.view.main_window.content.SetLoadingThread()
         
-        board = model.Board(tree_widget_item.board_iden)
-        thread_url = board.GetThreadURL(tree_widget_item.thread_num, 'l40')
+        board_iden = tree_widget_item.board_iden
+        thread_num = tree_widget_item.thread_num
+        
+        board = model.Board(board_iden)
+        thread_url = board.GetThreadURL(thread_num, 'l40')
         
         self.view.main_window.content.UpdateThreadURL(thread_url)
+        
+        self.config.boards_cache['last_read'][board_iden].headlines[thread_num] = \
+            self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num]
+        
+        self._UpdateBoardTree(board_iden)
         
     def _OnThreadListItemClickReady(self, thread):
         self.view.main_window.content.UpdateThread(thread)

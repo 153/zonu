@@ -72,6 +72,7 @@ class Controller(object):
     def _OnBoardWatcherReady(self, result):
         """This method is called when a board watcher thread finished retrieving its results."""
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        self.config.boards_cache['boards'][result.board_iden] = result.board
         
         if result.board_iden not in self.config.boards_cache['last_read']:
             self.config.boards_cache['last_read'][result.board_iden] = model.BoardState(result.board)

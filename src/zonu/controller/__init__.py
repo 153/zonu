@@ -65,7 +65,7 @@ class Controller(object):
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         
         if result.board_iden not in self.config.boards_cache['last_read']:
-            self.config.boards_cache['last_read'][result.board_iden] = model.BoardState()
+            self.config.boards_cache['last_read'][result.board_iden] = model.BoardState(result.board)
         
         self._UpdateBoardTree(result.board_iden)
         self._StartBoardWatcherThread(result.board_iden, delay=self.config.general['board_crawl_rate'])

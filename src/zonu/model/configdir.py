@@ -116,6 +116,7 @@ class ConfigDir(object):
         """Save the configuration."""
         config_yaml_path = os.path.join(self.dir_path, self._CONFIG_FILE_NAME)
         sites_yaml_path = os.path.join(self.dir_path, self._SITES_FILE_NAME)
+        boards_cache_path = os.path.join(self.dir_path, self._BOARDS_CACHE_FILE_NAME)
         
         config_dict = dict()
         config_dict['general'] = self.general
@@ -126,6 +127,7 @@ class ConfigDir(object):
         boards_dict['all_sites'] = self.all_sites
         yaml.dump(boards_dict, open(sites_yaml_path, 'w'))
         
+        pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
     
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)

@@ -4,15 +4,21 @@ from PyQt4 import QtGui
 
 
 class ThreadList(QtGui.QTreeWidget):
+    """Displays a thread list.
     
+    This class exposes an attribute 'thread_items', which maps
+      (board_iden[model.BoardIden], thread_num[int]) -> _ThreadTreeWidgetItem
+    """
     def __init__(self, parent, board_iden, config):
         QtGui.QTreeWidget.__init__(self, parent)
         self.board_iden = board_iden
         self.config = config
         self.setHeaderLabels(["Subject", "# Posts", "Author", "Thread #"]) 
+        self.thread_items = {}
         
     def _Update(self, headlines):
         self.clear()
+        self.thread_items = {}
         
         num_threads_to_list = self.config.general['num_threads_to_list']
         
@@ -24,8 +30,10 @@ class ThreadList(QtGui.QTreeWidget):
             item.setText(0, headline.subject)
             item.setText(1, str(headline.num_posts))
             item.setText(2, headline.author)
-            item.setText(3, str(headline.thread_num))
-        
+            item.setText(3, str(headline.thread_num)) 
+            
+            self.thread_items[(self.board_iden, headline.thread_num)] = item
+            
         self.resizeColumnToContents(0)
         self.setColumnWidth(0, self.columnWidth(0) + 20)
         

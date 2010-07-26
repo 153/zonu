@@ -18,6 +18,14 @@ class Controller(object):
             
         self.thread_pool = []
     
+        site_idens = self.config.GetSiteIdens()
+        
+        for site_iden in site_idens:
+            for board_iden in site_iden.board_idens:
+                if (board_iden in self.config.boards_cache['last_retrieved']
+                    and board_iden in self.config.boards_cache['last_read']):
+                    self._UpdateBoardTree(board_iden)
+                
     def BindView(self):
         # Connect with general app signals
         self.app.connect(self.app, QtCore.SIGNAL('lastWindowClosed()'),
@@ -117,6 +125,8 @@ class Controller(object):
             self.thread_pool.append(thread)
 
     def _OnBoardTreeClickBoardReady(self, result):        
+        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        
         board_view = ui.BoardView(self.view.main_window, result.board_iden,
                                   self.config)
         board_view.UpdateHeadlines(result.board.headlines)
@@ -128,10 +138,25 @@ class Controller(object):
         board_view.connect(board_view.thread_list.GetTreeWidget(),
                            QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
                            self._OnThreadListItemClick)
-                                                              
-        self.view.main_window.SetContent(board_view)
         
-        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        # Set threads in the thread list to be bold if they are newer than what
+        # was last read.
+        for (board_iden, thread_num), item in board_view.thread_list.thread_items.iteritems():
+            last_retrieved_posts = self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num].num_posts
+            last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
+            
+            num_unread_posts = last_retrieved_posts - last_read_posts
+            
+            if num_unread_posts > 0:
+                font = item.font(0)
+                font.setBold(True)
+                item.setFont(0, font)
+                item.setFont(1, font)
+                item.setFont(2, font)
+                item.setFont(3, font)   
+        
+        # Display the board view in the main window
+        self.view.main_window.SetContent(board_view)
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos
@@ -139,6 +164,7 @@ class Controller(object):
     def _OnThreadListItemClick(self, tree_widget_item, col):
         self.view.main_window.content.SetLoadingThread()
         
+        # Display this thread in the thread view 
         board_iden = tree_widget_item.board_iden
         thread_num = tree_widget_item.thread_num
         
@@ -147,6 +173,15 @@ class Controller(object):
         
         self.view.main_window.content.UpdateThreadURL(thread_url)
         
+        # Set the font in the thread list to not be bold, as we're reading this thread
+        font = tree_widget_item.font(0)
+        font.setBold(False)
+        tree_widget_item.setFont(0, font)
+        tree_widget_item.setFont(1, font)
+        tree_widget_item.setFont(2, font)
+        tree_widget_item.setFont(3, font)    
+        
+        # Update the (n) tag in the board tree
         self.config.boards_cache['last_read'][board_iden].headlines[thread_num] = \
             self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num]
         

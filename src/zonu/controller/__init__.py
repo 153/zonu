@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
+import os
 import urlparse
 import webbrowser
-import os
 from PyQt4 import QtCore
 from PyQt4 import QtWebKit
 from zonu import model
@@ -70,7 +70,8 @@ class Controller(object):
         self.thread_pool.append(thread)
     
     def _OnBoardWatcherReady(self, result):
-        """This method is called when a board watcher thread finished retrieving its results."""
+        """This method is called when a board watcher thread finished
+        retrieving its results."""
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         self.config.boards_cache['boards'][result.board_iden] = result.board
         
@@ -116,45 +117,41 @@ class Controller(object):
     
     def _OnBoardTreeClick(self, tree_widget_item, col):
         if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
-            # Here is what goes on here: If the board is in the cache, display the board
-            # from the cache. If it's not, set a "Board loading..." screen. Either way,
-            # dispatch a thread to query updates for the board and display them.                
+            # Here what goes on here: If the board is in the cache, display the board from
+            # the cache, then dispatch a thread to look for updates. If it's not, set a
+            # "Board loading..." screen and dispatch a thread to query the headlines for the
+            # board and display them.                
             board_iden = tree_widget_item.board_iden
             
             if board_iden in self.config.boards_cache['boards']:
                 board = self.config.boards_cache['boards'][board_iden]
                 result = retrieveheadlinesthread._RetrieveHeadlinesResult(board_iden, board)
                 self._OnBoardTreeClickBoardReady(result)
+                
+                thread = retrieveheadlinesthread.RetrieveHeadlinesThread(board_iden)
+                thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
+                               self._OnBoardViewNewHeadlinesReady)
+                thread.start()
+                
+                self.thread_pool.append(thread)
             else:
                 loading_board_view = ui.LoadingBoardView(self.view.main_window)
                 self.view.main_window.SetContent(loading_board_view)
             
-            thread = retrieveheadlinesthread.RetrieveHeadlinesThread(board_iden)
-            thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
+                thread = retrieveheadlinesthread.RetrieveHeadlinesThread(board_iden)
+                thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
                                self._OnBoardTreeClickBoardReady)            
-            thread.start()
+                thread.start()
                 
-            self.thread_pool.append(thread)
+                self.thread_pool.append(thread)
 
-    def _OnBoardTreeClickBoardReady(self, result):        
-        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
-        self.config.boards_cache['boards'][result.board_iden] = result.board
+    def _BoldThreadListItems(self, thread_list):
+        """Set threads in the thread list to be bold if they are newer than what
+        was last read.
+        """
+        assert isinstance(thread_list, ui.ThreadList)
         
-        board_view = ui.BoardView(self.view.main_window, result.board_iden,
-                                  self.config)
-        board_view.UpdateHeadlines(result.board.headlines)
-        
-        board_view.connect(board_view.GetSplitter(),
-                           QtCore.SIGNAL('splitterMoved(int,int)'),
-                           self._OnBoardViewSplitterMoved)
-
-        board_view.connect(board_view.thread_list.GetTreeWidget(),
-                           QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
-                           self._OnThreadListItemClick)
-        
-        # Set threads in the thread list to be bold if they are newer than what
-        # was last read.
-        for (board_iden, thread_num), item in board_view.thread_list.thread_items.iteritems():
+        for (board_iden, thread_num), item in thread_list.thread_items.iteritems():
             if board_iden not in self.config.boards_cache['last_read']:
                 continue
             
@@ -173,9 +170,34 @@ class Controller(object):
                 item.setFont(1, font)
                 item.setFont(2, font)
                 item.setFont(3, font)   
+
+    def _OnBoardViewNewHeadlinesReady(self, result):
+        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        self.config.boards_cache['boards'][result.board_iden] = result.board
+
+        board_view = self.view.main_window.content
+        board_view.UpdateHeadlines(result.board.headlines)
+        self._BoldThreadListItems(board_view.thread_list)
+    
+    def _OnBoardTreeClickBoardReady(self, result):        
+        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        self.config.boards_cache['boards'][result.board_iden] = result.board
+        
+        board_view = ui.BoardView(self.view.main_window, result.board_iden,
+                                  self.config)
+        board_view.UpdateHeadlines(result.board.headlines)
+        
+        board_view.connect(board_view.GetSplitter(),
+                           QtCore.SIGNAL('splitterMoved(int,int)'),
+                           self._OnBoardViewSplitterMoved)
+
+        board_view.connect(board_view.thread_list.GetTreeWidget(),
+                           QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
+                           self._OnThreadListItemClick)
         
         # Display the board view in the main window
         self.view.main_window.SetContent(board_view)
+        self._BoldThreadListItems(board_view.thread_list)
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos
@@ -218,6 +240,7 @@ class Controller(object):
         self.view.main_window.content.UpdateThread(thread)
     
     def _OnThreadViewLinkClick(self, qurl):
+        """Triggered when the user clicks a link inside a thread view."""
         # Open new links in a new window if they are from a different server. Ie,
         # if the thread is on dis.4chan.org, anything that's not on dis.4chan.org
         # will be opened in a new window.
@@ -226,9 +249,7 @@ class Controller(object):
         
         url_netloc = urlparse.urlparse(url).netloc
         thread_netloc = urlparse.urlparse(thread_url).netloc
-        
-        print url_netloc, thread_netloc
-        
+                
         if url_netloc == thread_netloc:
             self.view.main_window.content.UpdateThreadURL(url)
         else:  

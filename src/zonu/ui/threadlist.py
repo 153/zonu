@@ -17,6 +17,8 @@ class ThreadList(QtGui.QTreeWidget):
         self.thread_items = {}
         
     def _Update(self, headlines):
+        selected_items = self.selectedItems()  # Save selected items
+        
         self.clear()
         self.thread_items = {}
         
@@ -36,6 +38,11 @@ class ThreadList(QtGui.QTreeWidget):
             
         self.resizeColumnToContents(0)
         self.setColumnWidth(0, self.columnWidth(0) + 20)
+
+        # Re-select previously selected items
+        for item in selected_items:            
+            new_item = [i for i in self.thread_items.values() if i == item][0]
+            self.setItemSelected(new_item, True)
         
     def GetTreeWidget(self):
         return self
@@ -48,3 +55,7 @@ class _ThreadTreeWidgetItem(QtGui.QTreeWidgetItem):
         self.board_iden = board_iden
         self.thread_num = thread_num
     
+    def __eq__(self, other):
+        return (self.board_iden == other.board_iden
+                and self.thread_num == other.thread_num)
+ 

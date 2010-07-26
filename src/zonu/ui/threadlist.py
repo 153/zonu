@@ -41,8 +41,9 @@ class ThreadList(QtGui.QTreeWidget):
 
         # Re-select previously selected items
         for item in selected_items:            
-            new_item = [i for i in self.thread_items.values() if i == item][0]
-            self.setItemSelected(new_item, True)
+            new_item = [i for i in self.thread_items.values() if i == item]
+            if new_item:
+                self.setItemSelected(new_item[0], True)
         
     def GetTreeWidget(self):
         return self

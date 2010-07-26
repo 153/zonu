@@ -25,7 +25,7 @@ class Controller(object):
                 if (board_iden in self.config.boards_cache['last_retrieved']
                     and board_iden in self.config.boards_cache['last_read']):
                     self._UpdateBoardTree(board_iden)
-                
+        
     def BindView(self):
         # Connect with general app signals
         self.app.connect(self.app, QtCore.SIGNAL('lastWindowClosed()'),
@@ -114,18 +114,29 @@ class Controller(object):
     
     def _OnBoardTreeClick(self, tree_widget_item, col):
         if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
-            loading_board_view = ui.LoadingBoardView(self.view.main_window)
-            self.view.main_window.SetContent(loading_board_view)
+            # Here is what goes on here: If the board is in the cache, display the board
+            # from the cache. If it's not, set a "Board loading..." screen. Either way,
+            # dispatch a thread to query updates for the board and display them.                
+            board_iden = tree_widget_item.board_iden
             
-            thread = retrieveheadlinesthread.RetrieveHeadlinesThread(tree_widget_item.board_iden)
+            if board_iden in self.config.boards_cache['boards']:
+                board = self.config.boards_cache['boards'][board_iden]
+                result = retrieveheadlinesthread._RetrieveHeadlinesResult(board_iden, board)
+                self._OnBoardTreeClickBoardReady(result)
+            else:
+                loading_board_view = ui.LoadingBoardView(self.view.main_window)
+                self.view.main_window.SetContent(loading_board_view)
+            
+            thread = retrieveheadlinesthread.RetrieveHeadlinesThread(board_iden)
             thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
-                           self._OnBoardTreeClickBoardReady)            
+                               self._OnBoardTreeClickBoardReady)            
             thread.start()
-            
+                
             self.thread_pool.append(thread)
 
     def _OnBoardTreeClickBoardReady(self, result):        
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        self.config.boards_cache['boards'][result.board_iden] = result.board
         
         board_view = ui.BoardView(self.view.main_window, result.board_iden,
                                   self.config)
@@ -142,6 +153,9 @@ class Controller(object):
         # Set threads in the thread list to be bold if they are newer than what
         # was last read.
         for (board_iden, thread_num), item in board_view.thread_list.thread_items.iteritems():
+            if board_iden not in self.config.boards_cache['last_read']:
+                continue
+            
             last_retrieved_posts = self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num].num_posts
             last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
             

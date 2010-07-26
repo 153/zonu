@@ -34,11 +34,11 @@ class RetrieveHeadlinesThread(QtCore.QThread):
             except urllib2.URLError:
                 pass
         
-        ret = _RetrieveHeadlinesReturn(self.board_iden, board)
+        ret = _RetrieveHeadlinesResult(self.board_iden, board)
         self.emit(QtCore.SIGNAL('ready(PyQt_PyObject)'), ret)
 
 
-class _RetrieveHeadlinesReturn(object):
+class _RetrieveHeadlinesResult(object):
     
     def __init__(self, board_iden, board):
         self.board_iden = board_iden

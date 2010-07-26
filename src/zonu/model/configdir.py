@@ -47,6 +47,7 @@ _DEFAULT_SITES = {'all_sites':
 _DEFAULT_BOARDS_CACHE = dict()
 _DEFAULT_BOARDS_CACHE['last_read'] = dict() 
 _DEFAULT_BOARDS_CACHE['last_retrieved'] = dict()
+_DEFAULT_BOARDS_CACHE['boards'] = dict()
 
 
 class ConfigDir(object):
@@ -127,7 +128,7 @@ class ConfigDir(object):
         boards_dict['all_sites'] = self.all_sites
         yaml.dump(boards_dict, open(sites_yaml_path, 'w'))
         
-        pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
+        #pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
     
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)

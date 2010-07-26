@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
+import urlparse
 import webbrowser
 import os
 from PyQt4 import QtCore
+from PyQt4 import QtWebKit
 from zonu import model
 from zonu import ui
 import retrieveheadlinesthread
@@ -47,7 +49,6 @@ class Controller(object):
         mw.connect(mw.sidebar.board_tree,
                    QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
                    self._OnBoardTreeClick)
-    
     
     def StartBackgroundTasks(self):
         """Overall procedure to start background tasks."""
@@ -190,6 +191,14 @@ class Controller(object):
         
         self.view.main_window.content.UpdateThreadURL(thread_url)
         
+        # Connect with the link clicked signal in the thread web view
+        thread_view = self.view.main_window.content.thread_view
+        
+        thread_view.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateExternalLinks)
+        thread_view.connect(thread_view.GetWebView(),
+                            QtCore.SIGNAL('linkClicked(const QUrl&)'),
+                            self._OnThreadViewLinkClick)
+        
         # Set the font in the thread list to not be bold, as we're reading this thread
         font = tree_widget_item.font(0)
         font.setBold(False)
@@ -206,6 +215,23 @@ class Controller(object):
         
     def _OnThreadListItemClickReady(self, thread):
         self.view.main_window.content.UpdateThread(thread)
+    
+    def _OnThreadViewLinkClick(self, qurl):
+        # Open new links in a new window if they are from a different server. Ie,
+        # if the thread is on dis.4chan.org, anything that's not on dis.4chan.org
+        # will be opened in a new window.
+        url = str(qurl.toString())
+        thread_url = self.view.main_window.content.thread_view.thread_url
+        
+        url_netloc = urlparse.urlparse(url).netloc
+        thread_netloc = urlparse.urlparse(thread_url).netloc
+        
+        print url_netloc, thread_netloc
+        
+        if url_netloc == thread_netloc:
+            self.view.main_window.content.UpdateThreadURL(url)
+        else:  
+            webbrowser.open(url)
         
     def _OnExit(self):
         self.config.ui['sidebar_width'] = self.view.main_window.vsplitter.sizes()[0]

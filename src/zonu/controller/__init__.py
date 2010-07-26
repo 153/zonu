@@ -157,7 +157,10 @@ class Controller(object):
                 continue
             
             last_retrieved_posts = self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num].num_posts
-            last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
+            if thread_num in self.config.boards_cache['last_read'][board_iden].headlines:
+                last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
+            else:
+                last_read_posts = 0
             
             num_unread_posts = last_retrieved_posts - last_read_posts
             

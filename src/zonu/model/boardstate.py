@@ -26,7 +26,7 @@ class BoardState(object):
     def Diff(self, other):
         """Generate a diff between two board states.
         
-        Examples:
+        Example:
             newer_state.Diff(older_state)
         """
         my_thread_nums = set(self.headlines.keys())
@@ -42,7 +42,26 @@ class BoardState(object):
 
         return BoardStateDiff(new_thread_nums, deleted_thread_nums, num_new_posts)
     
-    
+    def Union(self, other):
+        """Create a merge this board state with another state.
+        
+        Example:
+            # Mark as read
+            last_read =  last_read.Union(last_recieved)
+        """
+        union_headlines = self.headlines.copy()
+        union_headlines.update(other.headlines)
+                
+        # Let's not steal any references
+        for thread_num, headline in self.headlines.iteritems():
+            self.headlines[thread_num] = headline.Copy()
+        
+        union_board_state = BoardState()
+        union_board_state.headlines = union_headlines
+        
+        return union_board_state 
+
+
 class BoardStateDiff(object):
     """A diff between a board at different times."""
     def __init__(self, new_thread_nums, deleted_thread_nums, num_new_posts):

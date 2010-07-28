@@ -174,7 +174,6 @@ class Controller(object):
             if board_iden not in self.config.boards_cache['last_read']:
                 continue
             
-            
             if thread_num in self.config.boards_cache['last_read'][board_iden].headlines:
                 last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
             else:
@@ -209,7 +208,9 @@ class Controller(object):
             if result.board_iden == board_view.board_iden:    
                 board_view.UpdateHeadlines(result.board.headlines)
                 self._BoldThreadListItems(board_view.thread_list)
-    
+        
+        self._UpdateBoardTree(result.board_iden)
+        
     def _OnBoardTreeClickBoardReady(self, result):        
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         self.config.boards_cache['boards'][result.board_iden] = result.board
@@ -248,7 +249,13 @@ class Controller(object):
                 
     def _OnBoardTreeMarkBoardAsRead(self, board_iden):
         """When the user specifies to mark board as read via the right click menu."""
-        self.config.boards_cache['last_read'][board_iden] = self.config.boards_cache['last_retrieved'][board_iden].Copy()
+        last_read = self.config.boards_cache['last_read'][board_iden]
+        last_retrieved = self.config.boards_cache['last_retrieved'][board_iden]
+        
+        last_read = last_read.Union(last_retrieved)
+        
+        self.config.boards_cache['last_read'][board_iden] = last_read
+        
         self._UpdateBoardTree(board_iden)
         
         if isinstance(self.view.main_window.content, ui.BoardView):

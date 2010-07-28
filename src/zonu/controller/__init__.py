@@ -168,11 +168,16 @@ class Controller(object):
             if board_iden not in self.config.boards_cache['last_read']:
                 continue
             
-            last_retrieved_posts = self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num].num_posts
+            
             if thread_num in self.config.boards_cache['last_read'][board_iden].headlines:
                 last_read_posts =  self.config.boards_cache['last_read'][board_iden].headlines[thread_num].num_posts
             else:
                 last_read_posts = 0
+            
+            if thread_num in self.config.boards_cache['last_retrieved'][board_iden].headlines:
+                last_retrieved_posts = self.config.boards_cache['last_retrieved'][board_iden].headlines[thread_num].num_posts
+            else:
+                last_retrieved_posts = last_read_posts
             
             num_unread_posts = last_retrieved_posts - last_read_posts
             

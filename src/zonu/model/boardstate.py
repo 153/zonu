@@ -15,6 +15,14 @@ class BoardState(object):
             for headline in board.headlines:
                 self.headlines[headline.thread_num] = headline
 
+    def Copy(self):
+        copy = BoardState()
+        
+        for thread_num, headline in self.headlines.iteritems():
+            copy.headlines[thread_num] = headline.Copy()
+            
+        return copy    
+    
     def Diff(self, other):
         """Generate a diff between two board states.
         

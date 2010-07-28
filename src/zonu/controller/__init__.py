@@ -176,14 +176,18 @@ class Controller(object):
             
             num_unread_posts = last_retrieved_posts - last_read_posts
             
+            font = item.font(0)
+            
             if num_unread_posts > 0:
-                font = item.font(0)
                 font.setBold(True)
-                item.setFont(0, font)
-                item.setFont(1, font)
-                item.setFont(2, font)
-                item.setFont(3, font)   
-
+            else:
+                font.setBold(False)
+                
+            item.setFont(0, font)
+            item.setFont(1, font)
+            item.setFont(2, font)
+            item.setFont(3, font)
+            
     def _OnBoardViewNewHeadlinesReady(self, result):
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         self.config.boards_cache['boards'][result.board_iden] = result.board
@@ -215,7 +219,8 @@ class Controller(object):
     def _OnBoardTreeMarkSiteAsRead(self, site_iden):
         """When the user specifies to mark all boards in a site as read via
         the right-click menu."""
-        print site_iden
+        for board_iden in site_iden.board_idens:
+            self._OnBoardTreeMarkBoardAsRead(board_iden)
 
     def _OnBoardTreeUpdateBoard(self, board_iden):
         """When the user specifies to force an update of a board."""
@@ -223,7 +228,8 @@ class Controller(object):
                 
     def _OnBoardTreeMarkBoardAsRead(self, board_iden):
         """When the user specifies to mark board as read via the right click menu."""
-        print board_iden
+        self.config.boards_cache['last_read'][board_iden] = self.config.boards_cache['last_retrieved'][board_iden].Copy()
+        self._UpdateBoardTree(board_iden)
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos

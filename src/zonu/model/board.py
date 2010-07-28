@@ -85,6 +85,9 @@ class Headline(object):
         self.num_posts = num_posts
         self.author = author
 
+    def Copy(self):
+        return Headline(self.thread_num, self.subject, self.num_posts, self.author)
+
 
 class Thread(object):
     

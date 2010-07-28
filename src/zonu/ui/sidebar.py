@@ -20,16 +20,17 @@ class Sidebar(QtGui.QWidget):
         
         self.setLayout(vbox)
 
+
 class _BoardTree(QtGui.QTreeWidget):
     """A Board Tree that displays sites as items and their boards as their children.
     
     This widget supports a right-click menu. Connect to these signals to attach
     functionality:
     
-    For sites:
+    For sites in the board tree:
         markSiteAsRead(PyQt_PyQtObject)   # Where PyQt_PyObject is model.SiteIden
         
-    For boards:
+    For boards in the board tree:
         updateBoard(PyQt_PyObject)         # Where PyQt_PyObject is a model.BoardIden 
         markBoardAsRead(PyQt_PyObject)     # Where PyQt_PyObject is a model.BoardIden
     """
@@ -58,7 +59,7 @@ class _BoardTree(QtGui.QTreeWidget):
                 self.board_items[board_iden] = board_item
 
     def contextMenuEvent(self, event):
-        """Creates a custom right click menu for boards."""
+        """Creates a custom right click menu for sites and boards."""
         
         item = self.itemAt(event.pos())
         

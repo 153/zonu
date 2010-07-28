@@ -26,6 +26,7 @@ def GetHeadlines(board_iden):
         rss_url = '%s/%s' % (board_iden.site_iden.url, rss_link)
     
     rss_data = urllib2.urlopen(rss_url).read()
+    rss_data = rss_data.replace('&nbsp;', ' ');
     
     # This is a hack to convert SJIS to utf-8 because python XML parsers
     # don't support parsing SJIS, and some sites (like SAoVQ) use SJIS.

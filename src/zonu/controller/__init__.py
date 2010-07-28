@@ -245,8 +245,16 @@ class Controller(object):
 
     def _OnBoardTreeUpdateBoard(self, board_iden):
         """When the user specifies to force an update of a board."""
-        print board_iden
-                
+        # Note: this callback method will only update the GUI if the board
+        # is being displayed, so it is safe to call here where this may not
+        # be the case.
+        thread = retrieveheadlinesthread.RetrieveHeadlinesThread(board_iden)
+        thread.connect(thread, QtCore.SIGNAL('ready(PyQt_PyObject)'),
+                       self._OnBoardViewNewHeadlinesReady)
+        thread.start()
+
+        self.thread_pool.append(thread)                
+
     def _OnBoardTreeMarkBoardAsRead(self, board_iden):
         """When the user specifies to mark board as read via the right click menu."""
         last_read = self.config.boards_cache['last_read'][board_iden]

@@ -38,7 +38,11 @@ class MainWindow(QtGui.QMainWindow):
         self.vsplitter.addWidget(self.content)
         
         self.setCentralWidget(self.vsplitter)
-        
+    
+    def resizeEvent(self, event):
+        self.FixSizes()
+        self.content.FixSizes()
+    
     def SetContent(self, content):
         self.content.GetMainWidget().setVisible(False)
         self.vsplitter.addWidget(content)

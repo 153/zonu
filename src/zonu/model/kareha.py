@@ -80,3 +80,8 @@ def GetThreadURL(board_iden, thread_num, restriction):
     return thread_url
 
 
+def GetBoardURLs(board_iden):
+    return ['%s/%s' % (board_iden.site_iden.url, board_iden.name),
+            '%s/%s/' % (board_iden.site_iden.url, board_iden.name),
+            '%s/%s/index.html' % (board_iden.site_iden.url, board_iden.name)]
+ 

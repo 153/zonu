@@ -307,10 +307,17 @@ class Controller(object):
     
     def _OnThreadViewLinkClick(self, qurl):
         """Triggered when the user clicks a link inside a thread view."""
+        url = str(qurl.toString())
+        
+        # First, we block attempts to reach the board page to prevent leaving
+        # the sandbox.
+        board = model.Board(self.view.main_window.content.board_iden)
+        if url in board.GetBoardURLs():
+            return
+        
         # Open new links in a new window if they are from a different server. Ie,
         # if the thread is on dis.4chan.org, anything that's not on dis.4chan.org
-        # will be opened in a new window.
-        url = str(qurl.toString())
+        # will be opened in a new window.        
         thread_url = self.view.main_window.content.thread_view.thread_url
         
         url_netloc = urlparse.urlparse(url).netloc

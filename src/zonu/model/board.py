@@ -62,6 +62,9 @@ class Board(object):
     def GetThreadURL(self, thread_num, restriction=''):
         return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
     
+    def GetBoardURLs(self):
+        return self.mod.GetBoardURLs(self.board_iden)
+    
     def __setstate__(self, state):
         """Restart instance from pickled state."""
         for name, value in state.iteritems():

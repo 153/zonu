@@ -64,3 +64,11 @@ def _Filter(s):
 def GetThreadURL(board_iden, thread_num, restriction):
     return 'http://dis.4chan.org/read/%s/%d/%s' % (board_iden.name, thread_num, restriction)
     
+    
+def GetBoardURLs(board_iden):
+    return ['http://dis.4chan.org/%s' % board_iden.name,
+            'http://dis.4chan.org/%s/' % board_iden.name,
+            'http://dis.4chan.org/%s/index.html' % board_iden.name]
+
+              
+    

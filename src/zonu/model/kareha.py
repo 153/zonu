@@ -30,7 +30,7 @@ def GetHeadlines(board_iden):
     # This is a hack to convert SJIS to utf-8 because python XML parsers
     # don't support parsing SJIS, and some sites (like SAoVQ) use SJIS.
     if rss_data.startswith('<?xml version="1.0" encoding="shift_jis"?>'):
-        rss_data = unicode(rss_data, 'shiftjis').encode('utf8')
+        rss_data = unicode(rss_data, 'shiftjis', 'ignore').encode('utf8')
         rss_data = rss_data.replace('<?xml version="1.0" encoding="shift_jis"?>',
                                     '<?xml version="1.0" encoding="utf-8"?>')     
     

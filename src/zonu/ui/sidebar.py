@@ -15,8 +15,8 @@ class Sidebar(QtGui.QWidget):
         self.board_tree = _BoardTree(self, self.config) 
         vbox.addWidget(self.board_tree)        
 
-        self.watched_threads_btn = QtGui.QPushButton('Watched Threads', self)
-        vbox.addWidget(self.watched_threads_btn)
+        #self.watched_threads_btn = QtGui.QPushButton('Watched Threads', self)
+        #vbox.addWidget(self.watched_threads_btn)
         
         self.setLayout(vbox)
 

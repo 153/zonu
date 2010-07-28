@@ -40,7 +40,7 @@ class Controller(object):
                    self._OnMenuAbout)
         mw.connect(mw.exit_action, QtCore.SIGNAL('triggered()'),
                    self._OnMenuExit)
-    
+        
         # Connect main window splitter
         mw.connect(mw.vsplitter, QtCore.SIGNAL('splitterMoved(int,int)'),
                    self._OnMainWindowVSplitterMoved)
@@ -49,7 +49,19 @@ class Controller(object):
         mw.connect(mw.sidebar.board_tree,
                    QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)'),
                    self._OnBoardTreeClick)
-    
+        
+        mw.connect(mw.sidebar.board_tree,
+                   QtCore.SIGNAL('markSiteAsRead(PyQt_PyObject)'),
+                   self._OnBoardTreeMarkSiteAsRead)
+        
+        mw.connect(mw.sidebar.board_tree,
+                   QtCore.SIGNAL('updateBoard(PyQt_PyObject)'),
+                   self._OnBoardTreeUpdateBoard)
+        
+        mw.connect(mw.sidebar.board_tree,
+                   QtCore.SIGNAL('markBoardAsRead(PyQt_PyObject)'),
+                   self._OnBoardTreeMarkBoardAsRead)
+        
     def StartBackgroundTasks(self):
         """Overall procedure to start background tasks."""
         # Start tasks that look for thread updates every N minutes
@@ -144,7 +156,8 @@ class Controller(object):
                 thread.start()
                 
                 self.thread_pool.append(thread)
-
+                
+    
     def _BoldThreadListItems(self, thread_list):
         """Set threads in the thread list to be bold if they are newer than what
         was last read.
@@ -198,6 +211,19 @@ class Controller(object):
         # Display the board view in the main window
         self.view.main_window.SetContent(board_view)
         self._BoldThreadListItems(board_view.thread_list)
+    
+    def _OnBoardTreeMarkSiteAsRead(self, site_iden):
+        """When the user specifies to mark all boards in a site as read via
+        the right-click menu."""
+        print site_iden
+
+    def _OnBoardTreeUpdateBoard(self, board_iden):
+        """When the user specifies to force an update of a board."""
+        print board_iden
+                
+    def _OnBoardTreeMarkBoardAsRead(self, board_iden):
+        """When the user specifies to mark board as read via the right click menu."""
+        print board_iden
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos

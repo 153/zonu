@@ -15,7 +15,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('Zonu BBS Viewer')
         self.resize(config.ui['main_window_size'][0],
                     config.ui['main_window_size'][1])
-
+        
         # Build the menu
         menu_bar = self.menuBar()
         bbs_menu = menu_bar.addMenu('&BBS')

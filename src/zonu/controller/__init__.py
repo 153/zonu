@@ -278,7 +278,7 @@ class Controller(object):
         board = model.Board(board_iden)
         thread_url = board.GetThreadURL(thread_num, 'l40')
         
-        self.view.main_window.content.UpdateThreadURL(thread_url)
+        self.view.main_window.content.UpdateThreadURL(thread_num, thread_url)
         
         # Connect with the link clicked signal in the thread web view
         thread_view = self.view.main_window.content.thread_view
@@ -287,6 +287,10 @@ class Controller(object):
         thread_view.connect(thread_view.GetWebView(),
                             QtCore.SIGNAL('linkClicked(const QUrl&)'),
                             self._OnThreadViewLinkClick)
+        
+        thread_view.connect(thread_view.GetWebView(),
+                            QtCore.SIGNAL('urlChanged(QUrl)'),
+                            self._OnThreadViewURLChanged)
         
         # Set the font in the thread list to not be bold, as we're reading this thread
         font = tree_widget_item.font(0)
@@ -324,10 +328,32 @@ class Controller(object):
         thread_netloc = urlparse.urlparse(thread_url).netloc
                 
         if url_netloc == thread_netloc:
-            self.view.main_window.content.UpdateThreadURL(url)
+            board_view = self.view.main_window.content 
+            thread_num = board_view.thread_view.thread_num
+            board_view.UpdateThreadURL(thread_num, url)
         else:  
             webbrowser.open(url)
+    
+    def _OnThreadViewURLChanged(self, qurl):
+        """Triggered when the URL changes."""
+        # What we do here is intercept loads of the board URL, assuming they
+        # are redirects after the user has posted. Instead, we send the user
+        # back to the thread they just posted in.
+        board_view = self.view.main_window.content 
+        thread_view = board_view.thread_view
+        url =  str(qurl.toString())
         
+        board = model.Board(board_view.board_iden)        
+        
+        if url in board.GetBoardURLs():
+            thread_num = thread_view.thread_num    
+            target_url = board.GetThreadURL(thread_num, 'l5')        
+            board_view.UpdateThreadURL(thread_num, target_url)
+            
+            # Update last read cache so we don't think our own post is new
+            last_read_state = self.config.boards_cache['last_read'][board_view.board_iden] 
+            last_read_state.headlines[thread_num].num_posts += 1
+            
     def _OnExit(self):
         self.config.ui['sidebar_width'] = self.view.main_window.vsplitter.sizes()[0]
         

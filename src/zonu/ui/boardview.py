@@ -2,6 +2,7 @@
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+from zonu import model
 import mainwindowcontent
 import threadlist
 import threadview
@@ -41,6 +42,6 @@ class BoardView(mainwindowcontent.MainWindowContent, QtGui.QSplitter):
     def UpdateHeadlines(self, headlines):
         self.thread_list._Update(headlines)
     
-    def UpdateThreadURL(self, thread_url):
-        self.thread_view._Update(thread_url)
+    def UpdateThreadURL(self, thread_num, thread_url):        
+        self.thread_view._Update(thread_num, thread_url)
     

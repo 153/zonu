@@ -236,6 +236,13 @@ class Controller(object):
         self.config.boards_cache['last_read'][board_iden] = self.config.boards_cache['last_retrieved'][board_iden].Copy()
         self._UpdateBoardTree(board_iden)
         
+        if isinstance(self.view.main_window.content, ui.BoardView):
+            thread_list = self.view.main_window.content.thread_list
+            
+            if board_iden == thread_list.board_iden:                
+                self._BoldThreadListItems()
+            
+        
     def _OnBoardViewSplitterMoved(self, pos, idx):
         self.config.ui['threadlist_height'] = pos
         

@@ -51,8 +51,12 @@ class Controller(object):
                    self._OnBoardTreeClick)
         
         mw.connect(mw.sidebar.board_tree,
+                   QtCore.SIGNAL('updateSite(PyQt_PyObject)'),
+                   self._OnBoardTreeUpdateSite)
+        mw.connect(mw.sidebar.board_tree,
                    QtCore.SIGNAL('markSiteAsRead(PyQt_PyObject)'),
                    self._OnBoardTreeMarkSiteAsRead)
+        
         
         mw.connect(mw.sidebar.board_tree,
                    QtCore.SIGNAL('updateBoard(PyQt_PyObject)'),
@@ -128,7 +132,9 @@ class Controller(object):
         self.config.ui['sidebar_width'] = pos
     
     def _OnBoardTreeClick(self, tree_widget_item, col):
-        if isinstance(tree_widget_item, ui.sidebar._BoardTreeWidgetItem):
+        board_items = self.view.main_window.sidebar.board_tree.board_items.values()
+        
+        if tree_widget_item in board_items:
             # Here what goes on here: If the board is in the cache, display the board from
             # the cache, then dispatch a thread to look for updates. If it's not, set a
             # "Board loading..." screen and dispatch a thread to query the headlines for the
@@ -196,10 +202,13 @@ class Controller(object):
     def _OnBoardViewNewHeadlinesReady(self, result):
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
         self.config.boards_cache['boards'][result.board_iden] = result.board
-
-        board_view = self.view.main_window.content
-        board_view.UpdateHeadlines(result.board.headlines)
-        self._BoldThreadListItems(board_view.thread_list)
+        
+        if isinstance(self.view.main_window.content, ui.BoardView):
+            board_view = self.view.main_window.content
+        
+            if result.board_iden == board_view.board_iden:    
+                board_view.UpdateHeadlines(result.board.headlines)
+                self._BoldThreadListItems(board_view.thread_list)
     
     def _OnBoardTreeClickBoardReady(self, result):        
         self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
@@ -221,6 +230,12 @@ class Controller(object):
         self.view.main_window.SetContent(board_view)
         self._BoldThreadListItems(board_view.thread_list)
     
+    def _OnBoardTreeUpdateSite(self, site_iden):
+        """When the user specifies to update all boards in a site via the
+        right click menu."""
+        for board_iden in site_iden.board_idens:
+            self._OnBoardTreeUpdateBoard(board_iden)
+        
     def _OnBoardTreeMarkSiteAsRead(self, site_iden):
         """When the user specifies to mark all boards in a site as read via
         the right-click menu."""

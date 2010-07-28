@@ -28,11 +28,12 @@ class _BoardTree(QtGui.QTreeWidget):
     functionality:
     
     For sites in the board tree:
-        markSiteAsRead(PyQt_PyQtObject)   # Where PyQt_PyObject is model.SiteIden
+        updateSite(PyQt_PyObject)            # model.SiteIden
+        markSiteAsRead(PyQt_PyQtObject)      # model.SiteIden
         
     For boards in the board tree:
-        updateBoard(PyQt_PyObject)         # Where PyQt_PyObject is a model.BoardIden 
-        markBoardAsRead(PyQt_PyObject)     # Where PyQt_PyObject is a model.BoardIden
+        updateBoard(PyQt_PyObject)           # model.BoardIden 
+        markBoardAsRead(PyQt_PyObject)       # model.BoardIden
     """
     def __init__(self, parent, config):
         QtGui.QTreeWidget.__init__(self, parent)        
@@ -67,6 +68,11 @@ class _BoardTree(QtGui.QTreeWidget):
             assert isinstance(item, _SiteTreeWidgetItem)            
             
             menu = QtGui.QMenu(self)
+            
+            update_all_action = menu.addAction('Update All Boards')
+            menu.connect(update_all_action, QtCore.SIGNAL('triggered()'),
+                         lambda: self.emit(QtCore.SIGNAL('updateSite(PyQt_PyObject)'),
+                                                         item.site_iden))
             
             mark_all_as_read_action = menu.addAction('Mark All Boards as Read')
             menu.connect(mark_all_as_read_action, QtCore.SIGNAL('triggered()'),

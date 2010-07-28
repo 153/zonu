@@ -59,4 +59,3 @@ class _ThreadTreeWidgetItem(QtGui.QTreeWidgetItem):
     def __eq__(self, other):
         return (self.board_iden == other.board_iden
                 and self.thread_num == other.thread_num)
- 

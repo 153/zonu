@@ -200,7 +200,14 @@ class Controller(object):
             item.setFont(3, font)
             
     def _OnBoardViewNewHeadlinesReady(self, result):
-        self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+        
+        if result.board_iden in self.config.boards_cache['last_retrieved']:
+            last_retrieved = self.config.boards_cache['last_retrieved'][result.board_iden]
+            last_retrieved = last_retrieved.Union(model.BoardState(result.board))
+            self.config.boards_cache['last_retrieved'][result.board_iden] = last_retrieved
+        else: 
+            self.config.boards_cache['last_retrieved'][result.board_iden] = model.BoardState(result.board)
+                    
         self.config.boards_cache['boards'][result.board_iden] = result.board
         
         if isinstance(self.view.main_window.content, ui.BoardView):
@@ -342,7 +349,7 @@ class Controller(object):
             board_view.UpdateThreadURL(thread_num, url)
         else:
             # There is a nasty bug in Qt webkit that is for some reason triggering
-            # linkClicked(QUrl*) multiple times for a single click. To work around
+            # linkClicked(QUrl&) multiple times for a single click. To work around
             # this we prevent opening the link more than once in 50ms.
             if url in links_opened and time.time() - links_opened[url] < .05:                
                 pass  # Block opening link

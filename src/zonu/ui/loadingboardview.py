@@ -12,6 +12,6 @@ class LoadingBoardView(mainwindowcontent.MainWindowContent, QtGui.QLabel):
         self.setAlignment(QtCore.Qt.AlignCenter)
         self.setText('Loading board...')
     
-    def GetMainWidget(self):
+    def get_main_widget(self):
         return self
 

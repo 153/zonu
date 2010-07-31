@@ -27,50 +27,55 @@ class Board(object):
     def __init__(self, board_iden):
         self.board_iden = board_iden
         self.headlines = None
-        self._SetMod()
+        self._set_mod()
     
-    def _SetMod(self):
+    def _set_mod(self):
         if self.board_iden.site_iden.site_type in site.site_type_mods:
             self.mod = site.site_type_mods[self.board_iden.site_iden.site_type]
         else:
             raise ValueError('Site type "%s" not implemented.' 
                              % self.board_iden.site_iden.site_type)
 
-    def GetHeadlines(self):
-        """Get the headlines for this board. They will be stored in the
-        'headlines' attribute for later use, if needed.
+    def get_headlines(self):
+        """Get the headlines for this board.
+        
+        They will be stored in the 'headlines' attribute for later use,
+        if needed.
         """
         headlines = []
-        headline_dicts = self.mod.GetHeadlines(self.board_iden)
+        headline_dicts = self.mod.get_headlines(self.board_iden)
         
         for headline_dict in headline_dicts:
             headlines.append(Headline(headline_dict['thread_num'],
                                       headline_dict['subject'],                                      
                                       headline_dict['num_posts'],
-                                      headline_dict['author']))
+                                      headline_dict['author'],
+                                      headline_dict['last_post_time']))
             
         self.headlines = headlines
         return headlines
 
-    def GetThread(self, thread_num):
+    def get_thread(self, thread_num):
         thread_dict = self.mod.GetThread(self.board_iden, thread_num)
                 
-        return Thread(self.board_iden, thread_dict['subject'],
+        return Thread(self.board_iden,
+                      thread_num,
+                      thread_dict['subject'],
                       thread_dict['author'],
                       thread_dict['num_posts'])
     
-    def GetThreadURL(self, thread_num, restriction=''):
-        return self.mod.GetThreadURL(self.board_iden, thread_num, restriction)   
+    def get_thread_url(self, thread_num, restriction=''):
+        return self.mod.get_thread_url(self.board_iden, thread_num, restriction)   
     
-    def GetBoardURLs(self):
-        return self.mod.GetBoardURLs(self.board_iden)
+    def get_board_urls(self):
+        return self.mod.get_board_urls(self.board_iden)
     
     def __setstate__(self, state):
         """Restart instance from pickled state."""
         for name, value in state.iteritems():
             setattr(self, name, value)
         
-        self._SetMod()
+        self._set_mod()
         assert hasattr(self, 'mod')
         
     def __getstate__(self):
@@ -78,34 +83,27 @@ class Board(object):
         state = self.__dict__.copy()
         del state['mod']
         return state
-    
-    
+
+
 class Headline(object):
     """A headline on a board."""
-    def __init__(self, thread_num, subject, num_posts, author):
+    def __init__(self, thread_num, subject, num_posts, author, last_post_time):
         self.thread_num = thread_num
         self.subject = subject
         self.num_posts = num_posts
         self.author = author
+        self.last_post_time = last_post_time
 
-    def Copy(self):
-        return Headline(self.thread_num, self.subject, self.num_posts, self.author)
+    def copy(self):
+        return Headline(self.thread_num, self.subject, self.num_posts,
+                        self.author, self.last_post_time)
 
 
 class Thread(object):
-    
-    def __init__(self, board_iden, subject, author, num_posts):
+    """A thread on a board."""
+    def __init__(self, board_iden, thread_num, subject, author, num_posts):
         self.board_iden = board_iden
+        self.thread_num = thread_num
         self.subject = subject
         self.author = author
         self.num_posts = num_posts
-    
-
-class Post(object):
-    """A Post in a thread."""
-    def __init__(self, num, author, email, comment):
-        self.num = num
-        self.author = author
-        self.email = email
-        self.comment = comment
-        

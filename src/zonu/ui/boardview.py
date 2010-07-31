@@ -24,24 +24,21 @@ class BoardView(mainwindowcontent.MainWindowContent, QtGui.QSplitter):
         self.addWidget(self.thread_list)
         self.addWidget(self.thread_view)
             
-    def GetMainWidget(self):
+    def get_main_widget(self):
         return self
     
-    def GetSplitter(self):
+    def get_splitter(self):
         return self
     
-    def FixSizes(self):
+    def fix_sizes(self):
         sizes = self.sizes()
-        sizes[-1] = sizes[-1] + sizes[0] - self.config.ui['threadlist_height']
-        sizes[0] = self.config.ui['threadlist_height']
+        sizes[-1] = sizes[-1] + sizes[0] - self.config.threadlist_height
+        sizes[0] = self.config.threadlist_height
         self.setSizes(sizes)
-    
-    def SetLoadingThread(self):
-        pass 
-    
-    def UpdateHeadlines(self, headlines):
-        self.thread_list._Update(headlines)
-    
-    def UpdateThreadURL(self, thread_num, thread_url):        
-        self.thread_view._Update(thread_num, thread_url)
+        
+    def update_threadlist(self, board):
+        self.thread_list._update_from_board(board)
+
+    def update_threadview_url(self, thread_num, thread_url):        
+        self.thread_view._update(thread_num, thread_url)
     

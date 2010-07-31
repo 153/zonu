@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from PyQt4 import QtGui
+from zonu.utils import logging
 import sidebar
 import welcomescreen
 
@@ -13,8 +14,7 @@ class MainWindow(QtGui.QMainWindow):
         self.config = config
         
         self.setWindowTitle('Zonu BBS Viewer')
-        self.resize(config.ui['main_window_size'][0],
-                    config.ui['main_window_size'][1])
+        self.resize(*config.main_window_size)
         
         # Build the menu
         menu_bar = self.menuBar()
@@ -32,7 +32,7 @@ class MainWindow(QtGui.QMainWindow):
         # Put the sidebar and the right panel in an vsplitter        
         self.vsplitter = QtGui.QSplitter(self)
         self.sidebar = sidebar.Sidebar(self, self.config)
-        self.content = welcomescreen.WelcomeScreen(self).GetMainWidget()
+        self.content = welcomescreen.WelcomeScreen(self).get_main_widget()
         
         self.vsplitter.addWidget(self.sidebar)
         self.vsplitter.addWidget(self.content)
@@ -40,19 +40,38 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.vsplitter)
     
     def resizeEvent(self, event):
-        self.FixSizes()
-        self.content.FixSizes()
+        self.fix_sizes()
+        self.content.fix_sizes()
     
-    def SetContent(self, content):
-        self.content.GetMainWidget().setVisible(False)
+    def set_content(self, content):
+        self.content.get_main_widget().setVisible(False)
         self.vsplitter.addWidget(content)
         self.content = content
-        content.FixSizes()
-        self.FixSizes()
+
+        content.fix_sizes()
+        self.fix_sizes()
         
-    def FixSizes(self):
+    def fix_sizes(self):
         sizes = self.vsplitter.sizes()
-        sizes[-1] = sizes[-1] + sizes[0] - self.config.ui['sidebar_width']
-        sizes[0] = self.config.ui['sidebar_width']
+        sizes[-1] = sizes[-1] + sizes[0] - self.config.sidebar_width
+        sizes[0] = self.config.sidebar_width
         self.vsplitter.setSizes(sizes)
+
+    def update_board_tree(self, board_iden):
+        """Updates a board tree in the board tree based on new results in the cache.
+
+        This method takes a diff of the "last read" state and the "last retrieved"
+        state and updates the label in the board tree according to this.
+        """
+        board_diff = self.config.boards_cache.gen_diff(board_iden)
         
+        if board_diff.num_new_posts == 0:
+            self.sidebar.board_tree.board_items[board_iden].setText(0, board_iden.title)
+        elif board_diff.num_new_posts > 0:
+            new_text = '%s (%d)' % (board_iden.title, board_diff.num_new_posts)
+            self.sidebar.board_tree.board_items[board_iden].setText(0, new_text)
+        else:
+            logging.error('Board diff indicated a negative number of new posts for '
+                          '(site, board) = (%s, %s). That number was %d.'
+                          % (board_iden.site_iden.name, board_iden.name,
+                             board_diff.num_new_posts))

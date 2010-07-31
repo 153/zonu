@@ -17,5 +17,5 @@ class WelcomeScreen(mainwindowcontent.MainWindowContent, QtGui.QWidget):
         vbox = QtGui.QVBoxLayout(self)
         vbox.addWidget(label)
         
-    def GetMainWidget(self):
+    def get_main_widget(self):
         return self

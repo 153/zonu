@@ -16,13 +16,15 @@ class ThreadList(QtGui.QTreeWidget):
         self.setHeaderLabels(["Subject", "# Posts", "Author", "Thread #"]) 
         self.thread_items = {}
         
-    def _Update(self, headlines):
-        selected_items = self.selectedItems()  # Save selected items
+    def _update_from_board(self, board):
+        # Clear everything and re-add items.
+        selected_items = self.selectedItems()  # save selected items
         
         self.clear()
         self.thread_items = {}
         
-        num_threads_to_list = self.config.general['num_threads_to_list']
+        headlines = board.headlines
+        num_threads_to_list = self.config.num_threads_to_list
         
         if len(headlines) > num_threads_to_list:
             headlines = headlines[:num_threads_to_list]
@@ -45,7 +47,33 @@ class ThreadList(QtGui.QTreeWidget):
             if new_item:
                 self.setItemSelected(new_item[0], True)
         
-    def GetTreeWidget(self):
+        # Fix bolding of items
+        for (board_iden, thread_num), item in self.thread_items.iteritems():
+            last_read = self.config.boards_cache.get_last_read(board_iden)
+            if thread_num in last_read.headlines:
+                last_read_posts =  last_read.headlines[thread_num].num_posts
+            else:
+                last_read_posts = 0
+                        
+            last_retrieved = self.config.boards_cache.get_last_retrieved(board_iden)        
+            if thread_num in last_retrieved.headlines:
+                last_retrieved_posts = last_retrieved.headlines[thread_num].num_posts
+            else:
+                last_retrieved_posts = last_read_posts
+            
+            num_unread_posts = last_retrieved_posts - last_read_posts
+            
+            font = item.font(0)            
+            if num_unread_posts > 0:
+                font.setBold(True)
+            else:
+                font.setBold(False)                
+            item.setFont(0, font)
+            item.setFont(1, font)
+            item.setFont(2, font)
+            item.setFont(3, font)
+
+    def get_tree_widget(self):
         return self
 
 

@@ -6,14 +6,14 @@ class MainWindowContent(object):
     to the sidebar.
     
     Required Methods:
-      GetMainWidget() --> Return the main widget to be displayed
+      get_main_widget() --> Return the main widget to be displayed
     
     Optional Methods:
-      FixSizes() --> Fix the sizes of your widget based on the config settings.
+      fix_sizes() --> Fix the sizes of your widget based on the config settings.
     """
     def __init__(self):
-        assert hasattr(self, 'GetMainWidget'), 'GetMainWidget() method is required.'
+        assert hasattr(self, 'get_main_widget'), 'get_main_widget() method is required.'
     
-    def FixSizes(self):
+    def fix_sizes(self):
         pass
     

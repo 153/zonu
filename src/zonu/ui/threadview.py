@@ -12,11 +12,11 @@ class ThreadView(QtWebKit.QWebView):
         self.thread_num = None
         self.thread_url = None
         
-    def _Update(self, thread_num, thread_url):
+    def _update(self, thread_num, thread_url):
         self.thread_num = thread_num
         self.thread_url = thread_url
-        self.GetWebView().load(QtCore.QUrl(thread_url))
+        self.get_web_view().load(QtCore.QUrl(thread_url))
         
-    def GetWebView(self):
+    def get_web_view(self):
         return self
     

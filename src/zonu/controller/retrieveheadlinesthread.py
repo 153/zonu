@@ -29,7 +29,7 @@ class RetrieveHeadlinesThread(QtCore.QThread):
         
         while True:
             try:
-                board.GetHeadlines()
+                board.get_headlines()
                 break
             except urllib2.URLError:
                 pass

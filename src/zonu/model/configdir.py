@@ -3,12 +3,15 @@
 import cPickle as pickle
 import os
 import yaml
+from zonu.utils import logging
 import board
+import boardscache
 import site
 
 
 _DEFAULT_CONFIG = dict()
 _DEFAULT_CONFIG['general'] = dict()
+_DEFAULT_CONFIG['general']['debug_level'] = 'error'
 _DEFAULT_CONFIG['general']['last_used_version'] = '0.5'
 _DEFAULT_CONFIG['general']['num_threads_to_list'] = 40
 _DEFAULT_CONFIG['general']['board_crawl_rate'] = 60
@@ -44,10 +47,7 @@ _DEFAULT_SITES = {'all_sites':
                     ]}
 
 
-_DEFAULT_BOARDS_CACHE = dict()
-_DEFAULT_BOARDS_CACHE['last_read'] = dict() 
-_DEFAULT_BOARDS_CACHE['last_retrieved'] = dict()
-_DEFAULT_BOARDS_CACHE['boards'] = dict()
+_DEFAULT_BOARDS_CACHE = boardscache.BoardsCache()
 
 
 class ConfigDir(object):
@@ -129,8 +129,93 @@ class ConfigDir(object):
         yaml.dump(boards_dict, open(sites_yaml_path, 'w'))
         
         pickle.dump(self.boards_cache, open(boards_cache_path, 'w'))
+
+
+    # General Properties
+    # ----------------------------------------------------------------------
+
+    # Debug level
+    @property
+    def debug_level(self):
+        return self.general['debug_level']
+
+    @debug_level.setter
+    def debug_level(self, value):
+        if level in logging.ALL_LEVELS:
+            self.general['debug_level'] = level
+        else:
+            logging.error('Refusing to set invalid log level: %s' % value)
+
+    # Number of threads to list
+    @property
+    def num_threads_to_list(self):
+        return self.general['num_threads_to_list']
+
+    @num_threads_to_list.setter
+    def num_threads_to_list(self, value):
+        if isinstance(value, int):
+            self.general['num_threads_to_list'] = value
+        else:
+            logging.error('Refusing to set non-int num_threads_to_list"')
+
+    # Board crawl rate
+    @property
+    def board_crawl_rate(self):
+        return self.general['board_crawl_rate']
     
-    def __setattr__(self, name, value):
-        object.__setattr__(self, name, value)
-        #print name, value
-        
+    @board_crawl_rate.setter
+    def board_crawl_rate(self, value):
+        if isinstance(board_crawl_rate, int):
+            self.general['board_crawl_rate'] = value
+        else:
+            logging.error('Refusing to set non-int board_crawl_rate')
+
+    # UI Properties
+    # ----------------------------------------------------------------------
+
+    # The sidebar width
+    @property
+    def sidebar_width(self):
+        return self.ui['sidebar_width']
+
+    @sidebar_width.setter
+    def sidebar_width(self, value):
+        if isinstance(value, int):
+            self.ui['sidebar_width'] = value
+        else:
+            logging.error('Refusing to set non-int sidebar width')
+
+    # The main window size
+    @property
+    def main_window_size(self):
+        return self.ui['main_window_size']
+
+    @main_window_size.setter
+    def main_window_size(self, value):
+        if not isinstance(value, tuple):
+            logging.error('Refusing to set non-tuple main window size')
+            return
+
+        if len(value) != 2:
+            logging.error('Refusing to set main window size where '
+                          'len(size) != 2')
+            return
+
+        if not (isinstance(value[0], int) and isinstance(value[1], int)):
+            logging.error('Refusing to set main window size where '
+                          'width and height are not ints')
+            return
+
+        self.ui['main_window_size'] = value
+    
+    # Thread list height
+    @property
+    def threadlist_height(self):
+        return self.ui['threadlist_height']
+
+    @threadlist_height.setter
+    def threadlist_height(self, value):
+        if isinstance(value, int):
+            self.ui['threadlist_height'] = value
+        else:
+            logging.error('Refusing to set non-int threadlist height.')

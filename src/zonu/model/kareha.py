@@ -1,13 +1,17 @@
 #!/usr/bin/python
 
+import itertools
 import re
 import simplejson
+import sys
+import threading
 import urllib2
 import urlparse
 from xml.etree import ElementTree
+from zonu.utils import logging
 
 
-def GetHeadlines(board_iden):
+def get_headlines(board_iden):
     # We have to first download the board to extract the RSS url, because
     # some sites (like 4-ch) have them in non-default locations.
     board_url = '%s/%s' % (board_iden.site_iden.url, board_iden.name)
@@ -51,38 +55,83 @@ def GetHeadlines(board_iden):
         
         m = re.findall('(\d+)', item.find('guid').text)
         thread_num = int(m[-1])
+
         
         headline_dicts.append({'author': author,
                                'num_posts': num_posts,
                                'subject': subject,
                                'thread_num': thread_num})
+
+
+    # Now, let's use threads to get the last post time for each thread
+    # and insert it into each headline dictionary.
+    class WorkerThread(threading.Thread):
+        def __init__(self, thread_num):
+            threading.Thread.__init__(self)
+            self.thread_num = thread_num
+            self.last_post_time = None
+        def run(self):
+            self.last_post_time = get_thread(board_iden, self.thread_num)['last_post_time']
+
+    workers = []
+
+    for headline_dict in headline_dicts:
+        worker = WorkerThread(headline_dict['thread_num'])
+        worker.start()
+        workers.append(worker)
+
+    for worker in workers:
+        worker.join()
+
+    for worker in workers:
+        headline_dict = [d for d in headline_dicts
+                         if d['thread_num'] == worker.thread_num][0]
+        headline_dict['last_post_time'] = worker.last_post_time
     
     return headline_dicts
 
 
-def GetThread(board_iden, thread_num):
+def get_thread(board_iden, thread_num):
     res_url = '%s/%s/res/%d.html' % (board_iden.site_iden.url,
                                      board_iden.name, thread_num)
+
+    logging.debug('Kareha get_thread(%d), fetching: %s' % (thread_num, res_url))
+
     
-    res_html = urllib2.urlopen(res_url).read()
-    res_lines = res_html.split('\n')
-    
-    header_dict = simplejson.loads(res_lines[0][4:-4].replace('\' =>', '\': '))
-    
+    for i in itertools.count():
+        try:
+            res_html = urllib2.urlopen(res_url).read()
+            break
+        except (urllib2.URLError, urllib2.HTTPError):
+            if i >= 5:
+                raise sys.exc_info()[1]
+
+    res_lines = res_html.split('\n')        
+    json_meta = res_lines[0][4:-4].replace('\' =>', '\': ')
+    json_meta = json_meta.replace('\'', '"')  # TODO(meltingwax) fix this
+    json_meta = json_meta.replace('undef', 'null')
+
+    try:
+        header_dict = simplejson.loads(json_meta)
+    except UnicodeDecodeError:
+        header_dict = simplejson.loads(json_meta, encoding='sjis')
+    except ValueError:
+        print json_meta
+
     return {'author': header_dict['author'],
+            'last_post_time': header_dict['lastmod'],
             'num_posts': header_dict['postcount'],
             'subject': header_dict['title']}
     
     
-def GetThreadURL(board_iden, thread_num, restriction):    
+def get_thread_url(board_iden, thread_num, restriction):    
     thread_url = '%s/%s/kareha.pl/%d/%s' % (board_iden.site_iden.url,
                                             board_iden.name, thread_num,
                                             restriction)
     return thread_url
 
 
-def GetBoardURLs(board_iden):
+def get_board_urls(board_iden):
     return ['%s/%s' % (board_iden.site_iden.url, board_iden.name),
             '%s/%s/' % (board_iden.site_iden.url, board_iden.name),
             '%s/%s/index.html' % (board_iden.site_iden.url, board_iden.name)]
- 

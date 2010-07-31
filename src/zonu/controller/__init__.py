@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import time
 import urlparse
 import webbrowser
 from PyQt4 import QtCore
@@ -270,7 +271,7 @@ class Controller(object):
             thread_list = self.view.main_window.content.thread_list
             
             if board_iden == thread_list.board_iden:                
-                self._BoldThreadListItems()
+                self._BoldThreadListItems(thread_list)
             
         
     def _OnBoardViewSplitterMoved(self, pos, idx):
@@ -294,7 +295,7 @@ class Controller(object):
         thread_view.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateExternalLinks)
         thread_view.connect(thread_view.GetWebView(),
                             QtCore.SIGNAL('linkClicked(const QUrl&)'),
-                            self._OnThreadViewLinkClick)
+                            self._OnThreadViewLinkClicked)
         
         thread_view.connect(thread_view.GetWebView(),
                             QtCore.SIGNAL('urlChanged(QUrl)'),
@@ -317,7 +318,7 @@ class Controller(object):
     def _OnThreadListItemClickReady(self, thread):
         self.view.main_window.content.UpdateThread(thread)
     
-    def _OnThreadViewLinkClick(self, qurl):
+    def _OnThreadViewLinkClicked(self, qurl, links_opened={}):
         """Triggered when the user clicks a link inside a thread view."""
         url = str(qurl.toString())
         
@@ -339,8 +340,15 @@ class Controller(object):
             board_view = self.view.main_window.content 
             thread_num = board_view.thread_view.thread_num
             board_view.UpdateThreadURL(thread_num, url)
-        else:  
-            webbrowser.open(url)
+        else:
+            # There is a nasty bug in Qt webkit that is for some reason triggering
+            # linkClicked(QUrl*) multiple times for a single click. To work around
+            # this we prevent opening the link more than once in 50ms.
+            if url in links_opened and time.time() - links_opened[url] < .05:                
+                pass  # Block opening link
+            else:
+                links_opened[url] = time.time()
+                webbrowser.open(url)
     
     def _OnThreadViewURLChanged(self, qurl):
         """Triggered when the URL changes."""

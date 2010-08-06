@@ -65,13 +65,16 @@ class MainWindow(QtGui.QMainWindow):
         """
         board_diff = self.config.boards_cache.gen_diff(board_iden)
         
-        if board_diff.num_new_posts == 0:
+        #num_new = board_diff.num_new_posts
+        num_new = board_diff.num_new_threads
+
+        if num_new == 0:
             self.sidebar.board_tree.board_items[board_iden].setText(0, board_iden.title)
-        elif board_diff.num_new_posts > 0:
-            new_text = '%s (%d)' % (board_iden.title, board_diff.num_new_posts)
+        elif num_new > 0:
+            new_text = '%s (%d)' % (board_iden.title, num_new)
             self.sidebar.board_tree.board_items[board_iden].setText(0, new_text)
         else:
             logging.error('Board diff indicated a negative number of new posts for '
                           '(site, board) = (%s, %s). That number was %d.'
                           % (board_iden.site_iden.name, board_iden.name,
-                             board_diff.num_new_posts))
+                             num_new))

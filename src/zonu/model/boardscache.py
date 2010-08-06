@@ -50,8 +50,8 @@ class BoardsCache(object):
                 board_iden in self._last_retrieved):
             raise Exception()
 
-        newer = self._last_read[board_iden]
-        older = self._last_retrieved[board_iden]
+        newer = self._last_retrieved[board_iden]
+        older = self._last_read[board_iden]
 
         newer_thread_nums = set(newer.headlines.keys())
         older_thread_nums = set(older.headlines.keys())

@@ -18,15 +18,18 @@ class Controller(object):
         self.app = app
         self.view = view
         self.config = config
-
         self.thread_pool = []
     
+    def initialize(self):
+        """Initialize the controller. This should be called immediately after
+        instantiation."""
         site_idens = self.config.GetSiteIdens()
         
         for site_iden in site_idens:
             for board_iden in site_iden.board_idens:
                 if (self.config.boards_cache.get_last_read(board_iden) is not None
                     and self.config.boards_cache.get_last_retrieved(board_iden) is not None):
+                    
                     self.view.main_window.update_board_tree(board_iden)
         
     def bind_view(self):
@@ -203,7 +206,7 @@ class Controller(object):
 
     def _on_board_tree_mark_board_as_read(self, board_iden):
         """When the user specifies to mark board as read via the right click menu."""
-        last_retrieved = self.config.boards_cache.get_last_retrieved()
+        last_retrieved = self.config.boards_cache.get_last_retrieved(board_iden)
         
         if last_retrieved and isinstance(self.view.main_window.content, ui.BoardView):
             self.view.main_window.content.update_threadlist(last_retrieved.to_board())

@@ -21,6 +21,7 @@ def main():
     view = ui.View(config)
     
     app_controller = controller.Controller(app, view, config)
+    app_controller.initialize()
     app_controller.bind_view()
     app_controller.start_bg_tasks()
     

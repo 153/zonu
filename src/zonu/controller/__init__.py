@@ -299,8 +299,8 @@ class Controller(object):
         
         if url in board.get_board_urls():
             thread_num = thread_view.thread_num    
-            target_url = board.GetThreadURL(thread_num, 'l5')        
-            board_view.UpdateThreadURL(thread_num, target_url)
+            target_url = board.get_thread_url(thread_num, 'l5')        
+            board_view.update_threadview_url(thread_num, target_url)
             
             # Update cache so we don't think our own post is new
             self.config.boards_cache.inc_thread_num_posts(board_view.board_iden,

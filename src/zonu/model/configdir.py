@@ -79,7 +79,8 @@ class ConfigDir(object):
         
         if not os.path.exists(boards_cache_path):
             pickle.dump(_DEFAULT_BOARDS_CACHE, open(boards_cache_path, 'w'))
-        
+            print 'Created', boards_cache_path
+
         zonu_dict = yaml.load(open(config_yaml_path))
         self.general = zonu_dict['general']
         self.ui = zonu_dict['ui']

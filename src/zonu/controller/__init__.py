@@ -226,7 +226,7 @@ class Controller(object):
         
         self.view.main_window.content.update_threadview_url(thread_num, thread_url)
         
-        # Connect with the link clicked signal in the thread web view
+        # Connect with the signals in the thread web view
         thread_view = self.view.main_window.content.thread_view
         
         thread_view.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateExternalLinks)
@@ -262,12 +262,12 @@ class Controller(object):
         
         # Open new links in a new window if they are from a different server. Ie,
         # if the thread is on dis.4chan.org, anything that's not on dis.4chan.org
-        # will be opened in a new window.        
+        # will be opened in a new window.
         thread_url = self.view.main_window.content.thread_view.thread_url
         
         url_netloc = urlparse.urlparse(url).netloc
         thread_netloc = urlparse.urlparse(thread_url).netloc
-                
+        
         if url_netloc == thread_netloc:
             board_view = self.view.main_window.content 
             thread_num = board_view.thread_view.thread_num
@@ -285,7 +285,7 @@ class Controller(object):
     def _on_thread_view_url_changed(self, qurl):
         """Triggered when the URL changes.
         
-        Note that if the URL is changes due a user clicking a link, the method 
+        Note that if the URL is changed due a user clicking a link, the method 
         _on_thread_view_link_clicked is called first.
         """
         # What we do here is intercept loads of the board URL, assuming they

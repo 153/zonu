@@ -32,7 +32,7 @@ def get_headlines(board_iden):
 
         headline_dicts.append({'author': name,
                                'num_posts': num_posts,
-                               'last_post_time': last_post_time,
+                               'sort_key': last_post_time,
                                'subject': subject,
                                'thread_num': thread_num})
     

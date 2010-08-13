@@ -50,7 +50,7 @@ class Board(object):
                                       headline_dict['subject'],                                      
                                       headline_dict['num_posts'],
                                       headline_dict['author'],
-                                      headline_dict['last_post_time']))
+                                      headline_dict['sort_key']))
             
         self.headlines = headlines
         return headlines
@@ -87,16 +87,16 @@ class Board(object):
 
 class Headline(object):
     """A headline on a board."""
-    def __init__(self, thread_num, subject, num_posts, author, last_post_time):
+    def __init__(self, thread_num, subject, num_posts, author, sort_key):
         self.thread_num = thread_num
         self.subject = subject
         self.num_posts = num_posts
         self.author = author
-        self.last_post_time = last_post_time
+        self.sort_key = sort_key
 
     def copy(self):
         return Headline(self.thread_num, self.subject, self.num_posts,
-                        self.author, self.last_post_time)
+                        self.author, self.sort_key)
 
 
 class Thread(object):

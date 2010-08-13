@@ -2,7 +2,6 @@
 
 
 from board import Board
-from board import BoardIden
 
 
 class BoardsCache(object):
@@ -139,7 +138,7 @@ class BoardState(object):
         """Convert this board state to a full board."""
         board = Board(self.board_iden)
         board.headlines = self.headlines.values()
-        board.headlines.sort(key=lambda h: h.last_post_time, reverse=True)        
+        board.headlines.sort(key=lambda h: h.sort_key, reverse=True)        
         return board
 
 

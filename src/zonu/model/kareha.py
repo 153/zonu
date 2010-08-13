@@ -4,7 +4,7 @@ import itertools
 import re
 import simplejson
 import sys
-import threading
+import time
 import urllib2
 import urlparse
 from xml.etree import ElementTree
@@ -44,7 +44,9 @@ def get_headlines(board_iden):
     headline_dicts = []    
     items = rss.findall('channel/item')
     
-    for item in items:
+    base_sort_key = int(time.time())
+    
+    for i, item in enumerate(items):
         author = item.find('author').text
         
         subject = item.find('title').text
@@ -56,38 +58,12 @@ def get_headlines(board_iden):
         m = re.findall('(\d+)', item.find('guid').text)
         thread_num = int(m[-1])
 
-        
         headline_dicts.append({'author': author,
                                'num_posts': num_posts,
+                               'sort_key': base_sort_key + i,
                                'subject': subject,
                                'thread_num': thread_num})
 
-
-    # Now, let's use threads to get the last post time for each thread
-    # and insert it into each headline dictionary.
-    class WorkerThread(threading.Thread):
-        def __init__(self, thread_num):
-            threading.Thread.__init__(self)
-            self.thread_num = thread_num
-            self.last_post_time = None
-        def run(self):
-            self.last_post_time = get_thread(board_iden, self.thread_num)['last_post_time']
-
-    workers = []
-
-    for headline_dict in headline_dicts:
-        worker = WorkerThread(headline_dict['thread_num'])
-        worker.start()
-        workers.append(worker)
-
-    for worker in workers:
-        worker.join()
-
-    for worker in workers:
-        headline_dict = [d for d in headline_dicts
-                         if d['thread_num'] == worker.thread_num][0]
-        headline_dict['last_post_time'] = worker.last_post_time
-    
     return headline_dicts
 
 

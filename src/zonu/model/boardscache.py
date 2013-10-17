@@ -138,7 +138,7 @@ class BoardState(object):
         """Convert this board state to a full board."""
         board = Board(self.board_iden)
         board.headlines = self.headlines.values()
-        board.headlines.sort(key=lambda h: h.sort_key, reverse=True)        
+        board.headlines.sort(key=lambda h: h.sort_key)
         return board
 
 

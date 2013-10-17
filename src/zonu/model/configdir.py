@@ -22,14 +22,14 @@ _DEFAULT_CONFIG['ui']['threadlist_height'] = 400
 
 
 _DEFAULT_SITES = {'all_sites':
-                   [{'name': 'world4ch',
-                    'title': 'world4ch',
-                    'type': 'world4ch',
-                    'url': 'http://dis.4chan.org',
-                    'boards': [{'name': 'lounge', 'title': 'Lounge'},
-                               {'name': 'vip', 'title': 'News 4 VIP'},
-                               {'name': 'prog', 'title': 'Programming'},
-                               {'name': 'tech', 'title': 'Technology'}]},
+                   [#{'name': 'world4ch',
+                    #'title': 'world4ch',
+                    #'type': 'world4ch',
+                    #'url': 'http://dis.4chan.org',
+                    #'boards': [{'name': 'lounge', 'title': 'Lounge'},
+                    #           {'name': 'vip', 'title': 'News 4 VIP'},
+                    #           {'name': 'prog', 'title': 'Programming'},
+                    #           {'name': 'tech', 'title': 'Technology'}]},
                     {'name': '4ch',
                      'title': '4-ch',
                      'type': 'kareha',
@@ -43,7 +43,12 @@ _DEFAULT_SITES = {'all_sites':
                      'type': 'kareha',
                      'url': 'http://www.secretareaofvipquality.net',
                      'boards': [{'name': 'saovq', 'title': 'Text BBS'}]},
-                     
+                    
+                    {'name': 'sageru',
+                     'title': '6ch',
+                     'type': 'kareha',
+                     'url': 'http://sageru.org',
+                     'boards': [{'name': './', 'title': 'Unholy Citadel'}]},                     
                     ]}
 
 

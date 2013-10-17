@@ -13,7 +13,7 @@ class ThreadList(QtGui.QTreeWidget):
         QtGui.QTreeWidget.__init__(self, parent)
         self.board_iden = board_iden
         self.config = config
-        self.setHeaderLabels(["Subject", "# Posts", "Author", "Thread #"]) 
+        self.setHeaderLabels(["Subject", "# Posts"]) 
         self.thread_items = {}
         
     def _update_from_board(self, board):
@@ -33,8 +33,6 @@ class ThreadList(QtGui.QTreeWidget):
             item = _ThreadTreeWidgetItem(self, self.board_iden, headline.thread_num)
             item.setText(0, headline.subject)
             item.setText(1, str(headline.num_posts))
-            item.setText(2, headline.author)
-            item.setText(3, str(headline.thread_num)) 
             
             self.thread_items[(self.board_iden, headline.thread_num)] = item
             
@@ -70,8 +68,6 @@ class ThreadList(QtGui.QTreeWidget):
                 font.setBold(False)                
             item.setFont(0, font)
             item.setFont(1, font)
-            item.setFont(2, font)
-            item.setFont(3, font)
 
     def get_tree_widget(self):
         return self

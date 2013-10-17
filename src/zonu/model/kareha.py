@@ -17,7 +17,7 @@ def get_headlines(board_iden):
     board_url = '%s/%s' % (board_iden.site_iden.url, board_iden.name)
     html_data = urllib2.urlopen(board_url).read()
     
-    m = re.search('<link rel=\"alternate\" title=\"RSS feed\" href=\"(.*)\" type=\"application\/rss\+xml\" />',
+    m = re.search('<link rel=\"alternate\" title=\"RSS feed\" href=\"(.*)\" type=\"application\/rss\+xml\"( *)/>',
                   html_data)
     rss_link = m.group(1)
     

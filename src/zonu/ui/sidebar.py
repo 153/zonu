@@ -65,7 +65,7 @@ class BoardTree(QtGui.QTreeWidget):
         item = self.itemAt(event.pos())
         
         if item in self.site_items.values():
-            assert isinstance(item, _SiteTreeWidgetItem)            
+            assert isinstance(item, SiteTreeWidgetItem)            
             
             menu = QtGui.QMenu(self)
             

@@ -108,6 +108,9 @@ def get_thread_url(board_iden, thread_num, restriction):
 
 
 def get_board_urls(board_iden):
-    return ['%s/%s' % (board_iden.site_iden.url, board_iden.name),
+    return ['%s' % board_iden.site_iden.url,
+            '%s/' % board_iden.site_iden.url,
+            '%s/index.html' % board_iden.site_iden.url,
+            '%s/%s' % (board_iden.site_iden.url, board_iden.name),
             '%s/%s/' % (board_iden.site_iden.url, board_iden.name),
             '%s/%s/index.html' % (board_iden.site_iden.url, board_iden.name)]

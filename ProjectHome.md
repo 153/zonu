@@ -1,0 +1,1 @@
+Zonu is an anonymous BBS viewer for Anonymous, 2ch-style message boards in the western world. Board type support is modular, and any kareha and shiichan boards are supported. This includes world4ch/dis.4chan.org, 4-ch.net, secretareaofvipquality.net, and more.
